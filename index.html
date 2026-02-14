@@ -1,0 +1,1525 @@
+<!-- 
+  FILENAME: index.html
+  APP: Govinda's Prasadam (User Client) - UPDATED 16.1 (Pro Version + Razorpay)
+  DEV: Enhanced UI, Smart Auth, Guest Mode, Strict Validation, Online Payment
+  STATUS: Production Ready
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Govinda's Prasadam | ISKCON Hadapsar</title>
+    
+    <!-- GOOGLE FONTS & ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- RAZORPAY SDK (ADDED FOR ONLINE PAYMENT) -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- MANIFEST FOR PWA (Optional but good for Mobile) -->
+    <link rel="manifest" href="/manifest.json">
+
+    <style>
+        :root {
+            --brand: #FF6D00;       /* Saffron Orange */
+            --brand-dark: #E65100;
+            --brand-light: #FFF3E0;
+            --bg-body: #F4F7F9;     /* Slight bluish tint for premium feel */
+            --white: #ffffff;
+            --text-main: #0F172A;   /* Dark slate for high contrast */
+            --text-light: #64748B;
+            --success: #10B981;
+            --error: #EF4444;
+            --nav-height: 75px;
+            --radius-box: 18px;
+            --max-width: 1000px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Manrope', sans-serif; }
+        
+        body { 
+            background: var(--bg-body); 
+            color: var(--text-main); 
+            padding-bottom: calc(var(--nav-height) + 40px); 
+            user-select: none; 
+            -webkit-font-smoothing: antialiased; 
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* --- LAYOUT UTILITIES --- */
+        .app-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0,0,0,0.05);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .hide { display: none !important; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .center { display: flex; justify-content: center; align-items: center; }
+        .ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; }
+
+        /* --- AUTH SCREEN (UPDATED) --- */
+        #auth-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 3000; padding: 30px; display: flex; flex-direction: column; justify-content: center; text-align: center; overflow-y: auto; backdrop-filter: blur(10px); }
+        .auth-content { max-width: 400px; margin: 0 auto; width: 100%; padding-top: 20px; animation: fadeInUp 0.4s ease-out; } 
+        .auth-close { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; color: #333; cursor: pointer; background: #eee; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; transition: 0.2s; }
+        .auth-close:active { transform: scale(0.9); }
+        
+        .logo-ring { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 20px; box-shadow: var(--shadow-lg); overflow: hidden; border: 3px solid var(--white); }
+        .logo-ring img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .auth-inp { width: 100%; padding: 18px; border: 1px solid #E2E8F0; border-radius: var(--radius-box); margin-bottom: 15px; font-size: 1rem; outline: none; background: #F8FAFC; transition: 0.3s; font-weight: 500; }
+        .auth-inp:focus { border-color: var(--brand); background: white; box-shadow: 0 0 0 4px rgba(255, 109, 0, 0.1); }
+        
+        .btn { width: 100%; padding: 18px; border: none; border-radius: var(--radius-box); font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; position: relative; }
+        .btn:active { transform: scale(0.97); }
+        .btn-brand { background: var(--brand); color: white; box-shadow: 0 8px 20px rgba(255, 109, 0, 0.25); background: linear-gradient(135deg, var(--brand), var(--brand-dark)); }
+        .btn-google { background: white; color: #333; border: 1px solid #E2E8F0; box-shadow: var(--shadow-sm); margin-bottom: 15px; font-weight: 600; }
+        .btn-sec { background: transparent; color: #64748B; margin-top: 5px; font-size: 0.9rem; font-weight: 600; }
+        
+        .divider { display: flex; align-items: center; text-align: center; color: #94A3B8; margin: 25px 0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #E2E8F0; }
+        .divider:not(:empty)::before { margin-right: 1em; }
+        .divider:not(:empty)::after { margin-left: 1em; }
+
+        /* --- APP HEADER (Enhanced Sticky) --- */
+        .app-header { 
+            background: rgba(255,255,255,0.85); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 20px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: var(--shadow-sm); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            max-width: var(--max-width); 
+            margin: 0 auto; 
+            width: 100%; 
+            transition: 0.3s;
+        }
+        .loc-row { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .loc-icon-bg { width: 42px; height: 42px; border-radius: 14px; background: linear-gradient(135deg, #FFF3E0, #FFE0B2); color: var(--brand-dark); display: grid; place-items: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(255,109,0,0.15); }
+        .loc-title { font-weight: 800; font-size: 1rem; color: var(--text-main); line-height: 1.1; display: flex; align-items: center; gap: 5px; }
+        .loc-txt { font-size: 0.8rem; color: var(--text-light); max-width: 220px; font-weight: 500; margin-top: 2px; }
+
+        /* --- BANNER / SLIDER --- */
+        .banner-wrapper {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            margin: 20px 15px 15px;
+            max-width: 1200px;
+            background: #eee;
+            transform: translateZ(0); /* Hardware accel */
+        }
+        @media(min-width: 768px) { .banner-wrapper { margin: 25px auto 15px; } }
+
+        .slider-box { 
+            display: flex; 
+            overflow-x: auto; 
+            scroll-snap-type: x mandatory; 
+            scroll-behavior: smooth; 
+            -webkit-overflow-scrolling: touch; 
+            scrollbar-width: none; 
+        }
+        .slider-box::-webkit-scrollbar { display: none; }
+        
+        .slide { 
+            min-width: 100%; 
+            aspect-ratio: 2.2 / 1; /* More panoramic */
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
+            scroll-snap-align: start; 
+            flex-shrink: 0;
+        }
+        
+        .slider-dots { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 20px; backdrop-filter: blur(4px); }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.6); border-radius: 50%; transition: all 0.3s ease; }
+        .dot.active { background: #fff; width: 18px; border-radius: 12px; }
+
+        /* --- CATEGORIES (PRO DESIGN) --- */
+        .cat-scroll { display: flex; overflow-x: auto; gap: 12px; padding: 10px 15px 25px; scroll-behavior: smooth; }
+        .cat-scroll::-webkit-scrollbar { display: none; }
+        
+        .cat-item { 
+            display: flex; 
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px 8px 8px;
+            background: #fff;
+            border: 1px solid #F1F5F9;
+            border-radius: 50px;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+        .cat-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #f0f0f0; }
+        .cat-name { font-size: 0.9rem; font-weight: 700; color: var(--text-light); white-space: nowrap; }
+        
+        .cat-item.active { 
+            background: var(--brand); 
+            border-color: var(--brand); 
+            box-shadow: 0 8px 20px rgba(255, 109, 0, 0.3); 
+            transform: translateY(-2px);
+        }
+        .cat-item.active .cat-name { color: white; }
+        .cat-item.active .cat-img { border: 2px solid white; }
+
+        /* --- PRODUCT CARDS --- */
+        .prod-grid { padding: 0 15px; display: grid; gap: 18px; grid-template-columns: repeat(1, 1fr); }
+        @media (min-width: 600px) { .prod-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 900px) { .prod-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .prod-card { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 16px; 
+            display: grid; 
+            grid-template-columns: 1fr 110px; 
+            gap: 15px; 
+            border: 1px solid #F1F5F9; 
+            box-shadow: var(--shadow-sm); 
+            min-height: 150px; 
+            transition: 0.3s; 
+            cursor: pointer; 
+            overflow: hidden; 
+            position: relative; 
+        }
+        .prod-card:active { transform: scale(0.98); }
+        .prod-info { display: flex; flex-direction: column; justify-content: space-between; padding: 2px 0; min-width: 0; }
+        .veg-tag { border: 1px solid var(--success); width: 16px; height: 16px; padding: 2px; border-radius: 4px; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; }
+        .veg-dot { background: var(--success); width: 8px; height: 8px; border-radius: 50%; }
+        .unit-badge { font-size: 0.7rem; background: #F3E5F5; color: #7B1FA2; padding: 3px 8px; border-radius: 6px; font-weight: 700; display: inline-block; margin-left: 6px; vertical-align: middle; white-space: nowrap; letter-spacing: 0.3px; }
+        
+        .prod-img-wrapper { position: relative; width: 110px; height: 110px; flex-shrink: 0; border-radius: 16px; overflow: hidden; background: #f9f9f9; box-shadow: inset 0 0 10px rgba(0,0,0,0.03); }
+        .prod-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .add-btn { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: white; color: var(--success); border: 1px solid #E0E0E0; font-weight: 800; padding: 0; width: 90px; height: 36px; display: grid; place-items: center; border-radius: 10px; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; z-index: 5; transition: 0.2s; top: 85px;}
+        .qty-box { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 100%; padding: 0 10px; }
+
+        /* --- PRODUCT DETAIL --- */
+        #view-product { background: white; min-height: 100vh; position: relative; padding-bottom: 90px; width: 100%; }
+        .pd-header { position: absolute; top: 0; left: 0; width: 100%; z-index: 10; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+        .pd-back-btn { background: rgba(255,255,255,0.9); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 1.1rem; color: #333; cursor: pointer; pointer-events: auto; box-shadow: 0 5px 20px rgba(0,0,0,0.1); backdrop-filter: blur(8px); }
+        .pd-gallery { width: 100%; height: 45vh; max-height: 500px; background: #f5f5f5; overflow-x: auto; display: flex; scroll-snap-type: x mandatory; }
+        .pd-gallery::-webkit-scrollbar { display: none; }
+        .pd-slide { min-width: 100%; height: 100%; object-fit: cover; scroll-snap-align: center; }
+        .pd-content { padding: 35px 25px; border-radius: 35px 35px 0 0; background: white; margin-top: -40px; position: relative; z-index: 5; box-shadow: 0 -10px 40px rgba(0,0,0,0.08); min-height: 60vh; }
+        .pd-title { font-size: 1.6rem; font-weight: 800; color: #1E293B; margin-bottom: 8px; line-height: 1.3; letter-spacing: -0.5px; }
+        .pd-price { font-size: 1.8rem; font-weight: 800; color: var(--brand); margin: 15px 0; display: flex; align-items: center; gap: 10px; }
+        .pd-desc { font-size: 1rem; line-height: 1.7; color: #475569; margin-bottom: 30px; }
+        .pd-unit { background: #FFF3E0; color: var(--brand-dark); padding: 6px 14px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; margin-top: 5px; display: inline-block; }
+        .pd-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 20px; box-shadow: 0 -5px 30px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; z-index: 20; max-width: var(--max-width); margin: 0 auto; border-top: 1px solid #f1f1f1; }
+        
+        /* --- CART & BILLING --- */
+        .cart-empty-state { text-align: center; padding: 80px 20px; }
+        .cart-empty-state img { width: 180px; opacity: 0.7; margin-bottom: 25px; filter: grayscale(1); mix-blend-mode: multiply; }
+        .bill-sec { background: white; padding: 25px 20px; border-radius: 25px; margin-top: 15px; box-shadow: var(--shadow-sm); border: 1px solid #f1f5f9; }
+        .bill-row { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 0.95rem; font-weight: 600; color: #475569; }
+        .bill-total { border-top: 2px dashed #eee; padding-top: 18px; margin-top: 15px; font-weight: 800; font-size: 1.3rem; display: flex; justify-content: space-between; align-items: center; color: #1E293B; }
+        
+        /* FREE DELIVERY MSG */
+        .free-del-msg {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            color: #1B5E20;
+            padding: 12px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+        .free-del-msg.locked {
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            color: #E65100;
+        }
+
+        /* --- ORDERS --- */
+        .order-card { background: white; padding: 22px; border-radius: 20px; margin-bottom: 18px; box-shadow: var(--shadow-sm); cursor: pointer; position: relative; border-left: 6px solid transparent; transition: transform 0.2s; border: 1px solid #f9f9f9; }
+        .order-card:active { transform: scale(0.98); }
+        .st-placed { background: #FFF8E1; color: #F57F17; border-left-color: #F57F17; }
+        .st-cooking { background: #E1F5FE; color: #0288D1; border-left-color: #0288D1; }
+        .st-completed { background: #E8F5E9; color: #2E7D32; border-left-color: #2E7D32; }
+        .st-paid { background: #E0F2F1; color: #00897B; border-left-color: #00897B; }
+
+        /* TRACKING & DRIVER INFO */
+        .track-box { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 15px; border-radius: 16px; margin-top: 15px; animation: fadeUp 0.5s; }
+        .driver-row { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+        .d-img-bg { width: 45px; height: 45px; background: white; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee; }
+        .live-btn { background: var(--brand); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 6px; animation: pulse 2s infinite; box-shadow: 0 4px 10px rgba(255,109,0,0.3); }
+        .call-btn-circle { width: 40px; height: 40px; border-radius: 50%; background: white; border: 1px solid #eee; display: grid; place-items: center; color: var(--success); font-size: 1.1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 109, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 109, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 109, 0, 0); } }
+        @keyframes fadeUp { from {opacity: 0; transform:translateY(10px);} to{opacity: 1; transform:translateY(0);}}
+        @keyframes fadeInUp { from {opacity: 0; transform:translateY(20px);} to{opacity: 1; transform:translateY(0);}}
+
+        /* --- PROFILE (Enhanced) --- */
+        .profile-bg-curve { background: linear-gradient(135deg, var(--brand), #EF6C00); height: 240px; width: 100%; border-radius: 0 0 60px 60px; position: absolute; top: 0; left: 0; z-index: 0; }
+        .profile-wrapper { position: relative; z-index: 1; padding: 120px 20px 20px; }
+        .user-card { background: white; border-radius: 26px; padding: 50px 20px 30px; text-align: center; box-shadow: var(--shadow-lg); position: relative; margin-bottom: 25px; }
+        .user-img-box { position: absolute; top: -65px; left: 50%; transform: translateX(-50%); width: 120px; height: 120px; background: white; padding: 5px; border-radius: 50%; box-shadow: 0 10px 30px rgba(255, 109, 0, 0.25); }
+        .setting-section-title { font-size: 0.8rem; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 15px; }
+        .setting-list { background: white; border-radius: 22px; padding: 8px; margin-bottom: 25px; box-shadow: var(--shadow-md); border: 1px solid #f1f5f9; }
+        .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px; border-bottom: 1px solid #f6f6f6; cursor: pointer; transition: 0.2s; border-radius: 12px; }
+        .setting-item:hover { background: #F8FAFC; }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-left { display: flex; align-items: center; gap: 16px; }
+        .setting-icon { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; font-size: 1.15rem; flex-shrink: 0; transition: 0.3s; }
+        .icon-orange { background: #FFF3E0; color: #FF9800; }
+        .icon-blue { background: #E3F2FD; color: #2196F3; }
+        .icon-teal { background: #E0F2F1; color: #009688; }
+        .icon-grey { background: #F5F5F5; color: #64748B; }
+        .icon-red { background: #FEF2F2; color: #EF4444; }
+        .setting-label { font-weight: 600; font-size: 0.95rem; color: #334155; }
+        
+        /* GUEST PROFILE CARD */
+        .guest-card-bg { background: linear-gradient(135deg, #fff, #FFF8E1); border: 1px solid #FFE0B2; text-align: center; padding: 40px 20px; border-radius: 24px; box-shadow: var(--shadow-md); }
+        
+        /* --- BOTTOM NAV (Translucent) --- */
+        .btm-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: var(--nav-height); background: rgba(255,255,255,0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: grid; grid-template-columns: repeat(4, 1fr); box-shadow: 0 -5px 30px rgba(0,0,0,0.06); z-index: 90; border-top: 1px solid rgba(255,255,255,0.5); max-width: var(--max-width); margin: 0 auto; padding-bottom: 5px; }
+        @media (max-width: 768px) { .btm-nav { border-radius: 24px 24px 0 0; } }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; color: #94A3B8; font-weight: 600; position: relative; transition: 0.3s; gap: 6px; cursor: pointer; }
+        .nav-btn i { font-size: 1.4rem; transition: 0.3s; margin-bottom: 0px; }
+        .nav-btn.active { color: var(--brand); }
+        .nav-btn.active i { transform: translateY(-3px); filter: drop-shadow(0 4px 8px rgba(255,109,0,0.3)); font-size: 1.6rem; }
+
+        /* --- FLOATING UI --- */
+        #store-closed-ui { position: fixed; inset: 0; background: rgba(255,255,255,0.99); z-index: 4000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; }
+        #float-bar { position: fixed; bottom: 95px; left: 20px; right: 20px; background: #1A1A1A; color: white; padding: 18px 25px; border-radius: 50px; display: none; align-items: center; justify-content: space-between; box-shadow: 0 15px 40px rgba(0,0,0,0.35); z-index: 95; cursor: pointer; animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 600px; margin: 0 auto; backdrop-filter: blur(5px); }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; flex-direction: column; justify-content: flex-end; backdrop-filter: blur(6px); }
+        .modal.open { display: flex; animation: fadeUp 0.3s forwards; }
+        .modal-body { background: white; width: 100%; max-height: 85vh; border-radius: 32px 32px 0 0; padding: 35px 25px; overflow-y: auto; box-shadow: 0 -10px 50px rgba(0,0,0,0.25); max-width: 600px; margin: 0 auto; }
+        @keyframes fadeUp { from {opacity:0;} to{opacity:1;} }
+        @keyframes popUp { from {transform: scale(0.8) translateY(20px); opacity:0;} to{transform: scale(1) translateY(0); opacity:1;} }
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1E293B; color: white; padding: 16px 30px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; z-index: 5000; opacity: 0; pointer-events: none; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+        .toast.show { bottom: 120px; opacity: 1; }
+
+        /* EXIT DIALOG */
+        #m-exit-body { border-radius: 24px; padding: 35px; text-align: center; margin: auto; max-width: 340px; }
+
+        /* PAYMENT RADIO STYLES */
+        .pay-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .pay-option:hover { background: #f8fafc; }
+        .pay-option input { margin-right: 12px; transform: scale(1.3); accent-color: var(--brand); }
+        .pay-label { font-weight: 600; color: #334155; font-size: 0.95rem; }
+
+    </style>
+<link rel="me" href="https://www.blogger.com/profile/18035977914919880974" />
+<meta name='google-adsense-platform-account' content='ca-host-pub-1556223355139109'/>
+<meta name='google-adsense-platform-domain' content='blogspot.com'/>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- 1. AUTHENTICATION OVERLAY (HIDDEN BY DEFAULT - GUEST MODE) -->
+        <div id="auth-overlay" class="hide">
+            <div class="auth-close" onclick="closeAuthOverlay()"><i class="fa-solid fa-xmark"></i></div>
+            <div class="auth-content">
+                <div class="logo-ring">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhKkhc5IkA65STmeUrIgSBI6nDpLrBG5GmZ1pzSkHZnSl5pTc1fzyHFmg1wqwDkeEaa0HZM6vcNk2WWTPuUpvhq-Uee_FUtPQwP2OUyAg8wzbJV1rk6_lCx1X0UlRuxpgulL3trFgzRAvgI1-aSRojJJWUMChXOl9yRSmsOLoHrdmOVDh8gVeUop5T3_VzU/s256/1000198120.png" alt="Logo">
+                </div>
+                <h2 style="font-weight: 800; color: var(--text-main); font-size: 1.6rem; letter-spacing: -0.5px; margin-bottom: 5px;">Govinda's Prasadam</h2>
+                <p style="color: #64748B; margin-bottom: 30px; font-size: 0.95rem;">ISKCON Hadapsar | Pune</p>
+
+                <!-- GOOGLE LOGIN -->
+                <button class="btn btn-google" onclick="googleLogin()">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" alt="G">
+                    <span>Login with Google</span>
+                </button>
+                
+                <div class="divider">OR USE EMAIL</div>
+
+                <div id="login-form">
+                    <form onsubmit="return false">
+                        <input type="email" id="l-email" class="auth-inp" placeholder="email@gmail.com" required>
+                        <input type="password" id="l-pass" class="auth-inp" placeholder="Password" required>
+                        <div style="text-align: right; margin-bottom: 25px;">
+                            <span style="color:var(--brand); font-size:0.85rem; font-weight:700; cursor:pointer;" onclick="toggleAuth('forgot')">Forgot Password?</span>
+                        </div>
+                        <button type="button" class="btn btn-brand" onclick="login()">
+                            <i class="fa-solid fa-lock"></i> SECURE LOGIN
+                        </button>
+                    </form>
+                    <button class="btn btn-sec" onclick="toggleAuth('signup')">Create New Account</button>
+                </div>
+
+                <div id="signup-form" class="hide">
+                    <form onsubmit="return false">
+                        <input type="text" id="s-name" class="auth-inp" placeholder="Full Name" required>
+                        <input type="email" id="s-email" class="auth-inp" placeholder="Valid Gmail (@gmail.com)" required>
+                        <input type="tel" id="s-phone" class="auth-inp" placeholder="10 Digit Mobile Number" maxlength="10" required>
+                        <input type="text" id="s-addr" class="auth-inp" placeholder="Full Delivery Address" required>
+                        <input type="password" id="s-pass" class="auth-inp" placeholder="Create Password" required>
+                        <button type="button" class="btn btn-brand" onclick="signup()">CREATE ACCOUNT</button>
+                    </form>
+                    <button class="btn btn-sec" onclick="toggleAuth('login')">Already have account?</button>
+                </div>
+
+                <div id="forgot-form" class="hide">
+                    <h3 style="margin-bottom:10px;">Reset Password</h3>
+                    <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">Link will be sent to registered gmail.</p>
+                    <form onsubmit="return false">
+                        <input type="email" id="f-email" class="auth-inp" placeholder="Enter Registered Gmail">
+                        <button type="button" class="btn btn-brand" onclick="forgotPass()">SEND RESET LINK</button>
+                    </form>
+                    <button class="btn btn-sec" onclick="toggleAuth('login')">Cancel</button>
+                </div>
+
+                <p id="auth-msg" style="color: var(--error); margin-top: 20px; font-size: 0.9rem; font-weight: 700;"></p>
+            </div>
+        </div>
+
+        <!-- 2. OFFLINE UI -->
+        <div id="store-closed-ui" class="hide">
+            <i class="fa-solid fa-shop-slash" style="font-size: 5rem; color: #ECEFF1; margin-bottom: 25px;"></i>
+            <h2 style="font-weight: 800; margin-bottom: 10px;">Kitchen Closed</h2>
+            <p style="color: #666; margin-bottom: 25px; line-height: 1.5; max-width: 80%;">We are currently offline. Please check back during service hours.</p>
+            <button class="btn btn-brand" style="width: auto; padding: 12px 35px;" onclick="window.location.reload()">REFRESH STATUS</button>
+        </div>
+
+        <!-- APP HEADER -->
+        <header class="app-header" id="header-main">
+            <div class="loc-row" onclick="findLoc()">
+                <div class="loc-icon-bg"><i class="fa-solid fa-location-dot"></i></div>
+                <div>
+                    <div class="loc-title">Govinda's <i class="fa-solid fa-caret-down" style="color:#ccc;"></i></div>
+                    <div class="loc-txt ellipsis" id="disp-addr">Detecting Location...</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==== VIEW: HOME ==== -->
+        <div id="view-home" class="view">
+            <!-- UPDATED SINGLE SLIDER -->
+            <div class="banner-wrapper">
+                <div class="slider-box" id="slider-box"></div>
+                <div class="slider-dots" id="slider-dots"></div>
+                <button class="slider-btn s-prev" style="display:none;" onclick="slide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="slider-btn s-next" style="display:none;" onclick="slide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            
+            <div style="padding: 10px 0 0;">
+                <div class="flex-between" style="padding: 0 15px; margin-bottom: 10px;">
+                    <h4 style="font-weight:800; color: #1E293B; letter-spacing:-0.3px;">Explore Menu</h4>
+                </div>
+                <!-- PILL SHAPE CATEGORIES -->
+                <div class="cat-scroll" id="cat-box"></div>
+            </div>
+
+            <div style="padding: 10px 15px;">
+                <h4 style="margin-bottom: 18px; font-weight:800; color: #1E293B;">Pure Veg Delicacies</h4>
+                <div class="prod-grid" id="prod-box">
+                    <div class="center" style="padding:50px;"><i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--brand)"></i></div>
+                </div>
+            </div>
+            <div style="height:60px;"></div>
+        </div>
+
+        <!-- ==== VIEW: PRODUCT DETAILS ==== -->
+        <div id="view-product" class="view hide">
+            <div class="pd-header">
+                <div class="pd-back-btn" onclick="nav('view-home', null, true)"><i class="fa-solid fa-arrow-left"></i></div>
+                <div class="pd-back-btn" onclick="nav('view-cart', document.getElementById('nav-cart'))"><i class="fa-solid fa-bag-shopping"></i></div>
+            </div>
+            
+            <div class="pd-gallery" id="pd-gallery-box">
+                <!-- Images Injected JS -->
+            </div>
+
+            <div class="pd-content">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <div class="veg-tag"><div class="veg-dot"></div></div>
+                        <div class="pd-title" id="pd-name">--</div>
+                        <div class="pd-unit" id="pd-unit">--</div>
+                    </div>
+                </div>
+
+                <div class="pd-price">
+                    <span id="pd-price">--</span>
+                </div>
+
+                <h4 style="margin-bottom:10px; color:#333;">Description</h4>
+                <p class="pd-desc" id="pd-desc">--</p>
+            </div>
+
+            <div class="pd-footer" id="pd-action-box">
+                <!-- Dynamic Add/Qty Button -->
+            </div>
+        </div>
+
+        <!-- ==== VIEW: CART (UPDATED) ==== -->
+        <div id="view-cart" class="view hide" style="background:var(--white); min-height:100vh;">
+            <div class="app-header">
+                <h2 style="font-weight:800;">Your Plate</h2>
+                <i class="fa-solid fa-trash-can" style="color:var(--error); cursor:pointer;" onclick="clearCart()"></i>
+            </div>
+            
+            <div id="cart-empty" class="cart-empty-state hide">
+                <img src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" alt="Empty">
+                <h3 style="margin-bottom:10px; color:#2D3436; font-weight:800;">Plate is Empty</h3>
+                <p style="color:#888; font-size:0.95rem; margin-bottom:25px;">Add some divine prasadam to continue.</p>
+                <button class="btn btn-brand" style="width:auto; padding: 14px 40px;" onclick="nav('view-home')">BROWSE MENU</button>
+            </div>
+
+            <div id="cart-content" style="padding: 15px;">
+                <!-- FREE DELIVERY NOTIFICATION -->
+                <div id="free-del-bar" class="free-del-msg locked">
+                    Checking Delivery Offers...
+                </div>
+
+                <div id="cart-items" style="display:grid; gap:12px;"></div>
+
+                <div class="bill-sec" id="checkout-box">
+                    <div style="font-weight:800; font-size:1rem; margin-bottom:15px; color:#2D3436;">Ordering For</div>
+                    
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <input type="text" id="cp-code" placeholder="PROMO CODE" class="auth-inp" style="margin:0; text-transform:uppercase; font-weight:700; letter-spacing:1px;" onkeydown="if(event.key === 'Enter'){event.preventDefault(); applyCp();}">
+                        <button type="button" class="btn btn-brand" style="width:auto; padding:0 25px;" onclick="applyCp()">APPLY</button>
+                    </div>
+                    <div id="cp-res" style="text-align:right; font-size:0.8rem; margin-top:-10px; margin-bottom:15px; font-weight:700;"></div>
+
+                    <div class="bill-row"><span>Item Total</span><span id="b-item">₹0</span></div>
+                    <div class="bill-row" style="color:var(--success)"><span>Discount</span><span id="b-disc">- ₹0</span></div>
+                    <div class="bill-row">
+                        <span>Delivery Fee</span>
+                        <span id="b-del">₹20</span>
+                    </div>
+                    <div class="bill-total"><span>To Pay</span><span id="b-total" style="color:var(--brand);">₹0</span></div>
+
+                    <div style="margin-top:25px; border-top:1px solid #f5f5f5; padding-top:15px;">
+                        <p style="font-weight:700; font-size:0.9rem; margin-bottom:5px; color:#555;">Name</p>
+                        <input type="text" id="final-name" class="auth-inp" placeholder="Receiver Name">
+
+                        <p style="font-weight:700; font-size:0.9rem; margin-bottom:5px; color:#555;">Phone</p>
+                        <input type="tel" id="final-phone" class="auth-inp" placeholder="Mobile Number">
+                        
+                        <p style="font-weight:700; font-size:0.9rem; margin-bottom:5px; color:#555;">Delivery Address</p>
+                        <textarea id="final-addr" class="auth-inp" rows="2" placeholder="Full Address with Landmark..."></textarea>
+                        
+                        <!-- PAYMENT METHOD SELECTION -->
+                        <p style="font-weight:700; font-size:0.9rem; margin-bottom:10px; color:#555; margin-top:15px;">Payment Method</p>
+                        
+                        <label class="pay-option">
+                            <input type="radio" name="pay-mode" value="online" checked>
+                            <span class="pay-label">Online Payment (Razorpay)</span>
+                        </label>
+                        
+                        <label class="pay-option">
+                            <input type="radio" name="pay-mode" value="cod">
+                            <span class="pay-label">Cash on Delivery</span>
+                        </label>
+
+                        <button type="button" class="btn btn-brand" onclick="placeOrder()" style="margin-top:10px;">
+                            <span>PLACE ORDER</span> <i class="fa-solid fa-angle-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div style="height:100px;"></div>
+        </div>
+
+        <!-- ==== VIEW: ORDERS ==== -->
+        <div id="view-orders" class="view hide" style="padding:20px 15px;">
+            <h2 style="margin:10px 0 25px; font-weight:800; color:#2D3436;">Your Orders</h2>
+            <div id="orders-list"></div>
+            <div style="height:80px;"></div>
+        </div>
+
+        <!-- ==== VIEW: PROFILE (UPDATED WITH LINKS) ==== -->
+        <div id="view-profile" class="view hide">
+            <div class="profile-bg-curve"></div>
+            
+            <div class="profile-wrapper">
+                
+                <!-- 1. IF USER IS GUEST -->
+                <div id="profile-guest" class="hide">
+                    <div class="user-card guest-card-bg">
+                        <i class="fa-solid fa-user-circle" style="font-size:4rem; color:var(--brand); margin-bottom:15px;"></i>
+                        <h2 style="font-weight:800; color:var(--text-main);">Welcome, Devotee!</h2>
+                        <p style="color:var(--text-light); margin:10px 0 20px;">Login to view your orders and manage profile.</p>
+                        <button class="btn btn-brand" onclick="openLoginModal()" style="width:200px; margin:0 auto;">LOGIN / SIGNUP</button>
+                    </div>
+                </div>
+
+                <!-- 2. IF USER IS LOGGED IN -->
+                <div id="profile-user" class="hide">
+                    <div class="user-card">
+                        <div class="user-img-box">
+                            <img id="p-img" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhKkhc5IkA65STmeUrIgSBI6nDpLrBG5GmZ1pzSkHZnSl5pTc1fzyHFmg1wqwDkeEaa0HZM6vcNk2WWTPuUpvhq-Uee_FUtPQwP2OUyAg8wzbJV1rk6_lCx1X0UlRuxpgulL3trFgzRAvgI1-aSRojJJWUMChXOl9yRSmsOLoHrdmOVDh8gVeUop5T3_VzU/s256/1000198120.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <h2 id="p-name" style="margin-top:15px; font-weight:800; font-size:1.4rem;">Guest User</h2>
+                        <div id="p-phone" style="font-size:0.95rem; color:var(--text-light); font-weight:600; margin:5px 0 15px;">+91 --</div>
+                        <div style="font-size:0.8rem; color:#aaa;" id="p-email">--</div>
+                        <button class="btn btn-sec" onclick="openEdit()" style="padding:8px 25px; width:auto; border:1px solid #eee; border-radius:30px; margin:10px auto; font-size:0.8rem;">
+                            Edit Profile
+                        </button>
+                    </div>
+
+                    <div class="setting-section-title">Account</div>
+                    <div class="setting-list">
+                        <div class="setting-item" onclick="nav('view-orders', document.querySelectorAll('.nav-btn')[2])">
+                            <div class="setting-left">
+                                <div class="setting-icon icon-orange"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                                <div class="setting-label">My Orders</div>
+                            </div>
+                            <i class="fa-solid fa-angle-right" style="color:#ddd;"></i>
+                        </div>
+                        <div class="setting-item" onclick="openEdit()">
+                            <div class="setting-left">
+                                <div class="setting-icon icon-teal"><i class="fa-solid fa-map-location-dot"></i></div>
+                                <div class="setting-label">Manage Address</div>
+                            </div>
+                            <i class="fa-solid fa-angle-right" style="color:#ddd;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-section-title">Support & Legal</div>
+                <div class="setting-list">
+                    <!-- LINK TO EXTERNAL ABOUT PAGE -->
+                    <div class="setting-item" onclick="window.location.href='about.html'">
+                        <div class="setting-left">
+                            <div class="setting-icon icon-blue"><i class="fa-solid fa-store"></i></div>
+                            <div class="setting-label">About Govinda's</div>
+                        </div>
+                        <i class="fa-solid fa-angle-right" style="color:#ddd;"></i>
+                    </div>
+
+                    <!-- REFUND POLICY -->
+                    <div class="setting-item" onclick="window.location.href='refund-policy.html'">
+                        <div class="setting-left">
+                            <div class="setting-icon icon-grey"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                            <div class="setting-label">Refund Policy</div>
+                        </div>
+                        <i class="fa-solid fa-angle-right" style="color:#ddd;"></i>
+                    </div>
+
+                    <!-- SHIPPING POLICY -->
+                    <div class="setting-item" onclick="window.location.href='shipping-policy.html'">
+                        <div class="setting-left">
+                            <div class="setting-icon icon-grey"><i class="fa-solid fa-truck-fast"></i></div>
+                            <div class="setting-label">Shipping Policy</div>
+                        </div>
+                        <i class="fa-solid fa-angle-right" style="color:#ddd;"></i>
+                    </div>
+                    
+                    <!-- LINK TO EXTERNAL TERMS PAGE -->
+                    <div class="setting-item" onclick="window.location.href='terms.html'">
+                        <div class="setting-left">
+                            <div class="setting-icon icon-grey"><i class="fa-solid fa-file-contract"></i></div>
+                            <div class="setting-label">Terms & Conditions</div>
+                        </div>
+                        <i class="fa-solid fa-angle-right" style="color:#ddd;"></i>
+                    </div>
+                    
+                    <!-- LINK TO EXTERNAL PRIVACY PAGE -->
+                    <div class="setting-item" onclick="window.location.href='privacy.html'">
+                        <div class="setting-left">
+                            <div class="setting-icon icon-grey"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="setting-label">Privacy Policy</div>
+                        </div>
+                        <i class="fa-solid fa-angle-right" style="color:#ddd;"></i>
+                    </div>
+                    
+                    <!-- LINK TO EXTERNAL CONTACT PAGE -->
+                    <div class="setting-item" onclick="window.location.href='contact.html'">
+                        <div class="setting-left">
+                            <div class="setting-icon icon-blue"><i class="fa-solid fa-headset"></i></div>
+                            <div class="setting-label">Contact Support</div>
+                        </div>
+                        <i class="fa-solid fa-angle-right" style="color:#ddd;"></i>
+                    </div>
+                </div>
+
+                <div id="logout-btn-box" class="setting-list hide" style="margin-bottom:40px;">
+                    <div class="setting-item" onclick="authOut()">
+                        <div class="setting-left">
+                            <div class="setting-icon icon-red"><i class="fa-solid fa-power-off"></i></div>
+                            <div class="setting-label" style="color:var(--error);">Logout</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DEVELOPER CREDIT SANTOSH -->
+                <div style="text-align:center; color:#ccc; font-size:0.75rem; padding-bottom:100px; display:flex; flex-direction:column; align-items:center;">
+                    <span>Version 16.1 (Pro) | Govinda's Prasadam</span>
+                    <span style="margin-top:5px; background:#e2e8f0; padding:5px 12px; border-radius:15px; color:#475569; font-weight:700; font-size:0.7rem;">Developed with ❤️ by Santosh</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==== FLOATING CART BAR ==== -->
+        <div id="float-bar" onclick="nav('view-cart', document.getElementById('nav-cart'))">
+            <div style="display:flex; flex-direction:column;">
+                <span style="font-weight:800; font-size:0.9rem;" id="fl-qty">1 Item</span>
+                <span style="font-size:0.8rem; opacity:0.9;">Total: <span id="fl-total">₹100</span></span>
+            </div>
+            <div style="font-weight:700; font-size:0.9rem; display:flex; align-items:center; gap:8px;">View Plate <i class="fa-solid fa-circle-chevron-right" style="font-size:1.1rem; color:var(--brand);"></i></div>
+        </div>
+
+        <!-- ==== BOTTOM NAVIGATION ==== -->
+        <nav class="btm-nav" id="navbar">
+            <div class="nav-btn active" onclick="nav('view-home', this)"><i class="fa-solid fa-house"></i> Home</div>
+            <div class="nav-btn" id="nav-cart" onclick="nav('view-cart', this)">
+                <i class="fa-solid fa-bag-shopping"></i> Plate
+                <div id="nav-badge" class="center" style="position:absolute; top:8px; right:20px; width:8px; height:8px; background:var(--error); border-radius:50%; display:none;"></div>
+            </div>
+            <div class="nav-btn" onclick="nav('view-orders', this)"><i class="fa-solid fa-receipt"></i> Orders</div>
+            <div class="nav-btn" onclick="nav('view-profile', this)"><i class="fa-solid fa-user"></i> Account</div>
+        </nav>
+
+        <!-- ==== MODALS ==== -->
+        <!-- Edit Profile -->
+        <div id="m-edit" class="modal">
+            <div class="modal-body">
+                <div class="flex-between" style="margin-bottom:20px;">
+                    <h3 style="font-weight:800;">Update Details</h3>
+                    <div style="background:#f4f4f4; width:35px; height:35px; border-radius:50%; display:grid; place-items:center; cursor:pointer;" onclick="shutMod()"><i class="fa-solid fa-xmark"></i></div>
+                </div>
+                
+                <form onsubmit="return false">
+                    <label style="font-size:0.85rem; font-weight:700; color:#555;">Display Name</label>
+                    <input type="text" id="e-name" class="auth-inp">
+                    
+                    <label style="font-size:0.85rem; font-weight:700; color:#555;">Mobile Number</label>
+                    <input type="tel" id="e-phone" class="auth-inp" maxlength="10">
+                    
+                    <label style="font-size:0.85rem; font-weight:700; color:#555;">Saved Address</label>
+                    <textarea id="e-addr" class="auth-inp" rows="3"></textarea>
+                    
+                    <button type="button" class="btn btn-brand" onclick="saveProfile()" style="margin-top:10px;">SAVE CHANGES</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- COMPLETE PROFILE MODAL (FOR GOOGLE USERS) -->
+        <div id="m-complete-profile" class="modal" style="z-index: 3500;">
+            <div class="modal-body">
+                <h3 style="font-weight:800; margin-bottom: 5px;">One Last Step!</h3>
+                <p style="color:#666; margin-bottom: 20px;">Please provide details to enable delivery.</p>
+                <form onsubmit="return false">
+                    <input type="tel" id="c-phone" class="auth-inp" placeholder="10 Digit Mobile Number" maxlength="10">
+                    <textarea id="c-addr" class="auth-inp" rows="2" placeholder="Full Delivery Address"></textarea>
+                    <button type="button" class="btn btn-brand" onclick="completeProfile()">SAVE & CONTINUE</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Exit Confirmation Modal -->
+        <div id="m-exit" class="modal" style="justify-content: center; backdrop-filter: blur(10px);">
+            <div class="modal-body" id="m-exit-body">
+                <i class="fa-solid fa-door-open" style="font-size: 3rem; color: #555; margin-bottom: 20px;"></i>
+                <h3 style="font-weight: 800; color: var(--text-main); margin-bottom: 10px;">Exit App?</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-bottom: 25px;">Do you really want to close the Govinda's Prasadam app?</p>
+                <div class="flex-between" style="gap: 15px;">
+                    <button class="btn btn-sec" style="background:#f5f5f5; color:#333;" onclick="closeExitModal()">CANCEL</button>
+                    <button class="btn btn-brand" onclick="confirmExit()">EXIT</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Receipt -->
+        <div id="m-bill" class="modal">
+            <div class="modal-body" id="bill-content"></div>
+        </div>
+
+        <div id="toast" class="toast">
+            <i class="fa-solid fa-circle-check" style="color:#10B981; font-size:1.2rem;"></i>
+            <span id="toast-msg">Action Successful</span>
+        </div>
+
+    </div> <!-- End App Container -->
+
+    <!-- LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getDatabase, ref, update, onValue, set, push, serverTimestamp, get, query, limitToLast } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAn38HlPSpz7yRZUmDG7qnedplFjv3WvAE",
+            authDomain: "iskcon-food.firebaseapp.com",
+            databaseURL: "https://iskcon-food-default-rtdb.firebaseio.com",
+            projectId: "iskcon-food",
+            storageBucket: "iskcon-food.firebasestorage.app",
+            messagingSenderId: "987150159471",
+            appId: "1:987150159471:web:c5f8506191ef06d147479a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        
+        let USER = null;
+        let IS_GUEST = true;
+        let CART = JSON.parse(localStorage.getItem('gp_v8_cart') || "[]");
+        let PRODS = [], COUPON = null, STORE_OPEN = true;
+        let CURRENT_PROD = null; 
+        let slideInterval = null;
+        
+        let DELIVERY_FEE = 20; 
+        let MIN_FREE_DELIVERY = 500; 
+
+        // VALIDATION HELPERS
+        const isValidGmail = (email) => /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(String(email).toLowerCase());
+        const isValidPhone = (p) => /^\d{10}$/.test(p);
+        
+        const escapeHtml = (text) => {
+            if(!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.toString().replace(/[&<>"']/g, function(m) { return map[m]; });
+        };
+
+        // AUTH & SMART FLOW
+        onAuthStateChanged(auth, u => {
+            if(u) {
+                // USER LOGGED IN
+                USER = u;
+                IS_GUEST = false;
+                document.getElementById('auth-overlay').classList.add('hide'); // Auto hide if session exists
+                
+                // Update Profile UI
+                document.getElementById('profile-guest').classList.add('hide');
+                document.getElementById('profile-user').classList.remove('hide');
+                document.getElementById('logout-btn-box').classList.remove('hide');
+
+                initData(u.uid, u);
+            } else {
+                // GUEST MODE
+                USER = null;
+                IS_GUEST = true;
+                
+                // Update Profile UI
+                document.getElementById('profile-guest').classList.remove('hide');
+                document.getElementById('profile-user').classList.add('hide');
+                document.getElementById('logout-btn-box').classList.add('hide');
+
+                // Don't show auth overlay automatically, just load data
+                initData(null, null); 
+            }
+        });
+
+        window.openLoginModal = () => {
+            document.getElementById('auth-overlay').classList.remove('hide');
+        };
+
+        window.closeAuthOverlay = () => {
+             document.getElementById('auth-overlay').classList.add('hide');
+        };
+
+        // GOOGLE LOGIN LOGIC (Enhanced with Validation)
+        window.googleLogin = () => {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+            .then(async (result) => {
+                const user = result.user;
+                // Check if user exists in DB and has phone/address
+                const snap = await get(ref(db, `customers/${user.uid}`));
+                const data = snap.val();
+
+                if (!data || !data.phone || !data.address) {
+                    // Missing info? Open Force Modal
+                    document.getElementById('auth-overlay').classList.add('hide');
+                    document.getElementById('m-complete-profile').classList.add('open');
+                } else {
+                    toast(`Welcome ${user.displayName}`);
+                }
+            }).catch((error) => {
+                err(error.message);
+            });
+        };
+
+        // Complete Profile (For Google Users)
+        window.completeProfile = () => {
+            const p = val('c-phone');
+            const a = val('c-addr');
+
+            if(!isValidPhone(p)) return toast("Enter valid 10-digit Phone");
+            if(a.length < 5) return toast("Enter valid address");
+
+            if(auth.currentUser) {
+                update(ref(db, `customers/${auth.currentUser.uid}`), {
+                    phone: p,
+                    address: a
+                }).then(() => {
+                    document.getElementById('m-complete-profile').classList.remove('open');
+                    toast("Profile Completed!");
+                    initData(auth.currentUser.uid, auth.currentUser);
+                });
+            }
+        };
+
+        window.login = () => {
+            const e = val('l-email'), p = val('l-pass');
+            if(!isValidGmail(e)) return err("Only @gmail.com addresses allowed");
+            signInWithEmailAndPassword(auth, e, p).catch(e => err(e.message));
+        };
+
+        window.signup = () => {
+            const n=val('s-name'), e=val('s-email'), p=val('s-pass'), ph=val('s-phone'), ad=val('s-addr');
+            
+            if(!n || !e || !p || !ph || !ad) return err("Please fill all details");
+            if(!isValidGmail(e)) return err("Use valid @gmail.com address only");
+            if(!isValidPhone(ph)) return err("Mobile number must be exactly 10 digits");
+            if(p.length < 6) return err("Password must be 6+ chars");
+            
+            createUserWithEmailAndPassword(auth, e, p).then(c => {
+                set(ref(db, `customers/${c.user.uid}`), { 
+                    name:escapeHtml(n), 
+                    email:e, 
+                    phone:ph, 
+                    address:escapeHtml(ad), 
+                    joined:serverTimestamp() 
+                });
+            }).catch(e => err(e.message));
+        };
+
+        window.forgotPass = () => {
+            const email = val('f-email');
+            if(!isValidGmail(email)) return err("Enter valid @gmail.com");
+
+            sendPasswordResetEmail(auth, email)
+            .then(() => {
+                alert(`Password Reset Link sent to ${email}. Check inbox/spam.`);
+                toggleAuth('login');
+            })
+            .catch(error => {
+                if(error.code === 'auth/user-not-found') err("Email not found.");
+                else err("Error: " + error.message);
+            });
+        };
+
+        window.authOut = () => signOut(auth);
+        
+        window.toggleAuth = (t) => {
+            ['login','signup','forgot'].forEach(x => document.getElementById(x+'-form').classList.add('hide'));
+            document.getElementById(t+'-form').classList.remove('hide');
+            document.getElementById('auth-msg').innerText = ''; 
+        };
+
+        // INIT DATA
+        function initData(uid, userObj) {
+            // Load Store Settings
+            onValue(ref(db, 'settings'), s => {
+                const val = s.val() || {};
+                STORE_OPEN = val.store_open !== false; 
+                if(val.delivery_fee) DELIVERY_FEE = parseInt(val.delivery_fee);
+                if(val.min_free_delivery) MIN_FREE_DELIVERY = parseInt(val.min_free_delivery);
+                document.getElementById('store-closed-ui').classList.toggle('hide', STORE_OPEN);
+                refreshCart();
+            });
+
+            // Load Sliders
+            onValue(ref(db, 'sliders'), s => {
+                const b = document.getElementById('slider-box');
+                const d = document.getElementById('slider-dots');
+                b.innerHTML = ''; d.innerHTML = '';
+                const slides = s.exists() ? Object.values(s.val()) : [];
+                if(slides.length > 0) {
+                    slides.forEach((x, i) => {
+                        b.innerHTML += `<div class="slide" style="background-image:url('${x.image}')"></div>`;
+                        d.innerHTML += `<div class="dot ${i===0?'active':''}" id="dot-${i}"></div>`;
+                    });
+                    if(slideInterval) clearInterval(slideInterval);
+                    slideInterval = setInterval(() => slide(1, true), 3000); 
+                }
+            });
+
+            // Load Categories (Pill UI)
+            onValue(ref(db, 'categories'), s => {
+                const b = document.getElementById('cat-box');
+                let h = `<div class="cat-item active" onclick="filt('all',this)"><img src="https://cdn-icons-png.flaticon.com/512/706/706164.png" class="cat-img"><div class="cat-name">All</div></div>`;
+                if(s.exists()) Object.values(s.val()).forEach(x => { 
+                    if(x.active) h += `<div class="cat-item" onclick="filt('${x.name}',this)"><img src="${x.image}" class="cat-img"><div class="cat-name">${x.name}</div></div>`; 
+                });
+                b.innerHTML = h;
+            });
+
+            // Load Menu
+            onValue(ref(db, 'menu'), s => {
+                PRODS = [];
+                if(s.exists()) Object.entries(s.val()).forEach(([k,v]) => PRODS.push({id:k, ...v}));
+                renderMenu(PRODS);
+            });
+
+            // Load User Data (If Logged In)
+            if(uid) {
+                onValue(ref(db, `customers/${uid}`), s => {
+                    let u = s.val();
+                    // Sync Google Photo if missing
+                    if (u && !u.photo && userObj && userObj.photoURL) {
+                         update(ref(db, `customers/${uid}`), {photo: userObj.photoURL});
+                    }
+                    if(!u && userObj) {
+                        // Create basic profile for Google users first time
+                        u = { 
+                            name: userObj.displayName || "User", 
+                            email: userObj.email, 
+                            phone: "",
+                            address: "",
+                            photo: userObj.photoURL || "",
+                            joined: serverTimestamp() 
+                        };
+                        set(ref(db, `customers/${uid}`), u);
+                    }
+                    
+                    if(u) {
+                        document.getElementById('p-name').innerText = u.name;
+                        document.getElementById('p-phone').innerText = u.phone || "No Phone Set";
+                        document.getElementById('p-email').innerText = u.email;
+                        if(u.photo) document.getElementById('p-img').src = u.photo;
+                        
+                        document.getElementById('e-name').value = u.name;
+                        document.getElementById('e-phone').value = u.phone || "";
+                        document.getElementById('e-addr').value = u.address || "";
+                        
+                        document.getElementById('final-name').value = u.name;
+                        document.getElementById('final-phone').value = u.phone || "";
+                        if(u.address) {
+                            document.getElementById('disp-addr').innerText = u.address;
+                            document.getElementById('final-addr').value = u.address;
+                        }
+                    }
+                });
+
+                // Load Orders
+                onValue(query(ref(db, 'orders'), limitToLast(30)), s => renderHistory(s.val()));
+            } else {
+                // Clear User Specific UI if guest
+                document.getElementById('orders-list').innerHTML = '<div class="center" style="margin-top:50px; color:#aaa;">Login to view orders</div>';
+            }
+        }
+
+        window.slide = (dir, auto=false) => {
+            const box = document.getElementById('slider-box');
+            if(!box) return; 
+            const w = box.clientWidth;
+            const max = box.scrollWidth - w;
+            let next = box.scrollLeft + (w * dir);
+            if (auto && next > max + 10) next = 0; 
+            else if (!auto) { if(next < 0) next = 0; if(next > max) next = max; }
+            box.scrollTo({ left: next, behavior: 'smooth' });
+            setTimeout(() => {
+                const idx = Math.round(box.scrollLeft / w);
+                document.querySelectorAll('.dot').forEach((e, i) => {
+                    if(i === idx) e.classList.add('active'); else e.classList.remove('active');
+                });
+            }, 300); 
+        };
+
+        function renderMenu(list) {
+            const b = document.getElementById('prod-box'); b.innerHTML = '';
+            if(!list.length) { b.innerHTML = '<div class="center" style="padding:40px; color:#aaa; grid-column:1/-1;">No Dishes Found</div>'; return; }
+            
+            list.filter(x => x.active).forEach(p => {
+                const c = CART.find(x => x.id == p.id);
+                const q = c ? c.qty : 0;
+                let btn = `<div class="add-btn" onclick="event.stopPropagation(); add('${p.id}')">ADD</div>`;
+                if(q > 0) btn = `<div class="add-btn" onclick="event.stopPropagation();" style="background:white; color:var(--text-main); border:1px solid var(--success);"><div class="qty-box"><i class="fa-solid fa-minus" onclick="mod('${p.id}',-1)"></i> <span>${q}</span> <i class="fa-solid fa-plus" onclick="mod('${p.id}',1)"></i></div></div>`;
+                let unitBadge = p.unitType ? `<span class="unit-badge">${p.unitVal} ${p.unitType}</span>` : '';
+
+                b.innerHTML += `
+                <div class="prod-card" onclick="openProduct('${p.id}')">
+                    <div class="prod-info">
+                        <div>
+                            <div class="veg-tag"><div class="veg-dot"></div></div>
+                            <div style="font-weight:700; margin-bottom:6px; line-height:1.3; font-size:1rem; color:#1E293B;">
+                                ${escapeHtml(p.name)} ${unitBadge}
+                            </div>
+                            <div style="font-weight:800; font-size:0.95rem;">₹${p.price}</div>
+                        </div>
+                        <div style="font-size:0.75rem; color:#94A3B8;" class="line-clamp-2">${escapeHtml(p.description||p.category)}</div>
+                    </div>
+                    <div class="prod-img-wrapper">
+                        <img src="${p.image}" class="prod-img">
+                        ${btn}
+                    </div>
+                </div>`;
+            });
+            refreshCart();
+        }
+
+        window.openProduct = (id) => {
+            const p = PRODS.find(x => x.id == id);
+            if(!p) return;
+            CURRENT_PROD = p;
+
+            document.getElementById('pd-name').innerText = p.name;
+            document.getElementById('pd-price').innerText = `₹${p.price}`;
+            document.getElementById('pd-desc').innerText = p.description || "No description available.";
+            
+            const uBox = document.getElementById('pd-unit');
+            if(p.unitType) {
+                uBox.innerText = `${p.unitVal} ${p.unitType}`;
+                uBox.style.display = 'inline-block';
+            } else {
+                uBox.style.display = 'none';
+            }
+
+            const gBox = document.getElementById('pd-gallery-box');
+            let images = (p.gallery && p.gallery.length > 0) ? p.gallery : [p.image];
+            gBox.innerHTML = images.map(img => `<img src="${img}" class="pd-slide">`).join('');
+
+            updateProductFooter();
+            nav('view-product');
+        };
+
+        function updateProductFooter() {
+            if(!CURRENT_PROD) return;
+            const p = CURRENT_PROD;
+            const c = CART.find(x => x.id == p.id);
+            const q = c ? c.qty : 0;
+            const f = document.getElementById('pd-action-box');
+
+            if(q === 0) {
+                f.innerHTML = `
+                    <div style="font-weight:700; font-size:1.1rem;">₹${p.price}</div>
+                    <button class="btn btn-brand" style="width:140px; padding:12px;" onclick="add('${p.id}'); updateProductFooter()">
+                        ADD TO PLATE
+                    </button>
+                `;
+            } else {
+                f.innerHTML = `
+                    <div style="font-weight:700; font-size:1.1rem;">₹${p.price * q}</div>
+                    <div style="background:var(--brand); color:white; border-radius:12px; height:45px; width:140px; display:flex; align-items:center; justify-content:space-between; padding:0 15px; font-weight:700;">
+                        <i class="fa-solid fa-minus" style="cursor:pointer;" onclick="mod('${p.id}',-1); updateProductFooter()"></i>
+                        <span>${q}</span>
+                        <i class="fa-solid fa-plus" style="cursor:pointer;" onclick="mod('${p.id}',1); updateProductFooter()"></i>
+                    </div>
+                `;
+            }
+        }
+
+        window.add = (id) => { const p = PRODS.find(x => x.id == id); CART.push({...p, qty:1}); saveCart(); toast("Added to Plate"); };
+        window.mod = (id,d) => { 
+            const i = CART.findIndex(x => x.id == id); 
+            if(i > -1) { 
+                CART[i].qty += d; 
+                if(CART[i].qty <= 0) CART.splice(i, 1); 
+                saveCart(); 
+            } 
+        };
+        window.clearCart = () => { if(confirm('Clear entire plate?')) { CART=[]; saveCart(); nav('view-home'); } };
+        
+        function saveCart() { 
+            localStorage.setItem('gp_v8_cart', JSON.stringify(CART)); 
+            renderMenu(PRODS); 
+            if(document.getElementById('view-product').style.display !== 'none' && CURRENT_PROD) {
+                updateProductFooter();
+            }
+        }
+
+        function refreshCart() {
+            const count = CART.reduce((a,b) => a + b.qty, 0);
+            const sub = CART.reduce((a,b) => a + (b.price * b.qty), 0);
+            
+            const bdg = document.getElementById('nav-badge');
+            if(count>0) { bdg.style.display = 'block'; } else { bdg.style.display='none'; }
+            
+            const fl = document.getElementById('float-bar');
+            if(count > 0 && document.getElementById('view-home').style.display !== 'none') {
+                fl.style.display = 'flex';
+                document.getElementById('fl-qty').innerText = `${count} Items`;
+                document.getElementById('fl-total').innerText = `₹${sub}`;
+            } else fl.style.display = 'none';
+
+            if(CART.length === 0) {
+                document.getElementById('cart-empty').classList.remove('hide');
+                document.getElementById('cart-content').classList.add('hide');
+            } else {
+                document.getElementById('cart-empty').classList.add('hide');
+                document.getElementById('cart-content').classList.remove('hide');
+                
+                const lst = document.getElementById('cart-items'); lst.innerHTML = '';
+                CART.forEach(i => {
+                    const uStr = i.unitType ? `(${i.unitVal} ${i.unitType})` : '';
+                    lst.innerHTML += `
+                    <div class="flex-between" style="background:#fff; border:1px solid #f0f0f0; padding:15px; border-radius:12px;">
+                        <div>
+                            <div class="veg-tag" style="margin-bottom:4px; width:12px; height:12px;"><div class="veg-dot" style="width:6px; height:6px;"></div></div>
+                            <div style="font-weight:700;">${escapeHtml(i.name)} <small>${uStr}</small></div>
+                            <div style="font-size:0.85rem; color:#888;">₹${i.price}</div>
+                        </div>
+                        <div style="border:1px solid #ddd; border-radius:8px; height:32px; width:90px; display:flex; align-items:center; justify-content:space-between; padding:0 8px; font-weight:700;">
+                            <i class="fa-solid fa-minus" style="cursor:pointer; color:var(--text-light);" onclick="mod('${i.id}',-1)"></i>
+                            <span>${i.qty}</span>
+                            <i class="fa-solid fa-plus" style="cursor:pointer; color:var(--success);" onclick="mod('${i.id}',1)"></i>
+                        </div>
+                    </div>`;
+                });
+            }
+
+            let disc = 0;
+            if(COUPON) {
+                disc = COUPON.type === 'flat' ? COUPON.value : Math.round(sub * (COUPON.value/100));
+                if(sub < COUPON.minOrder) { 
+                    disc = 0; COUPON = null; 
+                    document.getElementById('cp-res').innerText = "Minimum amount not met"; 
+                    document.getElementById('cp-res').style.color = "var(--error)"; 
+                }
+            }
+
+            // FREE DELIVERY
+            let finalDelivery = DELIVERY_FEE;
+            const freeBar = document.getElementById('free-del-bar');
+            
+            if (sub >= MIN_FREE_DELIVERY) {
+                finalDelivery = 0;
+                freeBar.classList.remove('locked');
+                freeBar.innerHTML = `🎉 Great! Free Delivery Unlocked`;
+                document.getElementById('b-del').innerHTML = `<span style="text-decoration:line-through; color:#aaa; margin-right:5px;">₹${DELIVERY_FEE}</span> <span style="color:var(--success)">FREE</span>`;
+            } else {
+                const diff = MIN_FREE_DELIVERY - sub;
+                freeBar.classList.add('locked');
+                freeBar.innerHTML = `<i class="fa-solid fa-truck"></i> Add items worth ₹${diff} for FREE Delivery`;
+                document.getElementById('b-del').innerText = `₹${finalDelivery}`;
+            }
+
+            const total = Math.max(0, sub - disc + finalDelivery);
+            document.getElementById('b-item').innerText = '₹' + sub;
+            document.getElementById('b-disc').innerText = '- ₹' + disc;
+            document.getElementById('b-total').innerText = '₹' + total;
+        }
+
+        window.applyCp = () => {
+            const c = val('cp-code').toUpperCase();
+            if(!c) return toast("Enter Code");
+            get(ref(db, `coupons/${c}`)).then(s => {
+                const v = s.val();
+                if(v && v.active) { 
+                    COUPON = v; 
+                    document.getElementById('cp-res').innerText = "Applied Successfully"; 
+                    document.getElementById('cp-res').style.color = "var(--success)";
+                    saveCart(); 
+                } else {
+                    document.getElementById('cp-res').innerText = "Invalid Code";
+                    document.getElementById('cp-res').style.color = "var(--error)";
+                }
+            });
+        };
+
+        window.placeOrder = async () => {
+            // CHECK STORE STATUS
+            if(!STORE_OPEN) return toast("Kitchen is Closed");
+            if(CART.length === 0) return toast("Plate is empty!");
+
+            // AUTH CHECK: IF GUEST, FORCE LOGIN
+            if(IS_GUEST || !USER) {
+                openLoginModal();
+                toast("Please login to place order");
+                return;
+            }
+
+            const name = escapeHtml(val('final-name'));
+            const phone = escapeHtml(val('final-phone'));
+            const addr = escapeHtml(val('final-addr'));
+            const paymentMethod = document.querySelector('input[name="pay-mode"]:checked').value;
+
+            if(name.length < 2) return toast("Please Enter Receiver Name");
+            if(!isValidPhone(phone)) return toast("Please Enter 10 Digit Phone Number");
+            if(addr.length < 5) return toast("Address too short!");
+
+            // Update user details if changed
+            update(ref(db, `customers/${USER.uid}`), { name:name, phone:phone, address:addr });
+
+            const sub = CART.reduce((a,b) => a + (b.price * b.qty), 0);
+            let deliveryCharge = (sub >= MIN_FREE_DELIVERY) ? 0 : DELIVERY_FEE;
+            let discVal = 0;
+            if(COUPON && sub >= COUPON.minOrder) {
+                discVal = COUPON.type === 'flat' ? COUPON.value : Math.round(sub * (COUPON.value/100));
+            }
+
+            const tot = sub + deliveryCharge - discVal;
+
+            if (paymentMethod === 'online') {
+                // RAZORPAY INTEGRATION
+                const options = {
+                    "key": "rzp_live_SG6aeuVkxXxv8c", // Provided Key
+                    "amount": tot * 100, // Amount in paise
+                    "currency": "INR",
+                    "name": "Govinda's Prasadam",
+                    "description": "Order Payment",
+                    "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhKkhc5IkA65STmeUrIgSBI6nDpLrBG5GmZ1pzSkHZnSl5pTc1fzyHFmg1wqwDkeEaa0HZM6vcNk2WWTPuUpvhq-Uee_FUtPQwP2OUyAg8wzbJV1rk6_lCx1X0UlRuxpgulL3trFgzRAvgI1-aSRojJJWUMChXOl9yRSmsOLoHrdmOVDh8gVeUop5T3_VzU/s256/1000198120.png",
+                    "handler": async function (response) {
+                        // On Success
+                        await push(ref(db, 'orders'), {
+                            userId: USER.uid,
+                            userName: name,
+                            userPhone: phone,
+                            address: addr,
+                            items: CART,
+                            subTotal: sub,
+                            deliveryFee: deliveryCharge,
+                            discount: discVal,
+                            total: tot,
+                            status: 'placed', // or 'paid'
+                            paymentMode: 'Online',
+                            paymentId: response.razorpay_payment_id,
+                            createdAt: serverTimestamp()
+                        });
+                        CART = []; COUPON = null; saveCart();
+                        nav('view-orders', document.querySelectorAll('.nav-btn')[2]);
+                        toast("Payment Successful! Order Placed.");
+                    },
+                    "prefill": {
+                        "name": name,
+                        "email": USER.email,
+                        "contact": phone
+                    },
+                    "notes": {
+                        "address": addr,
+                        "user_uid": USER.uid,
+                        "order_summary": JSON.stringify(CART.map(x => `${x.qty}x ${x.name}`))
+                    },
+                    "theme": {
+                        "color": "#FF6D00"
+                    }
+                };
+                const rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response){
+                    toast("Payment Failed: " + response.error.description);
+                });
+                rzp1.open();
+            } else {
+                // COD FLOW (Existing Logic)
+                await push(ref(db, 'orders'), {
+                    userId: USER.uid,
+                    userName: name,
+                    userPhone: phone,
+                    address: addr,
+                    items: CART,
+                    subTotal: sub,
+                    deliveryFee: deliveryCharge,
+                    discount: discVal,
+                    total: tot,
+                    status: 'placed',
+                    paymentMode: 'COD',
+                    createdAt: serverTimestamp()
+                });
+                CART = []; COUPON = null; saveCart();
+                nav('view-orders', document.querySelectorAll('.nav-btn')[2]);
+                toast("Order Placed Successfully!");
+            }
+        };
+
+        function renderHistory(data) {
+            const lst = document.getElementById('orders-list'); lst.innerHTML = '';
+            if(!data) { lst.innerHTML = '<div class="center" style="margin-top:50px; color:#aaa;">No past orders</div>'; return; }
+
+            // Logic preserved for tracking
+            Object.entries(data)
+                .map(([k,v]) => ({id:k, ...v}))
+                .filter(x => x.userId === USER.uid)
+                .sort((a,b) => b.createdAt - a.createdAt)
+                .forEach(o => {
+                    const st = o.status;
+                    let trackingUI = '';
+                    if(st === 'out_for_delivery') {
+                        const dName = o.driverName || 'Partner Driver';
+                        const dProv = o.deliveryProvider || 'Govinda Delivery';
+                        const dPhone = o.driverPhone || '';
+                        const dTrack = o.trackingUrl || '';
+                        
+                        trackingUI = `
+                        <div class="track-box">
+                            <div class="flex-between">
+                                <b style="color:#1B5E20; display:flex; align-items:center; gap:6px;">
+                                    <i class="fa-solid fa-person-biking"></i> ${dProv}
+                                </b>
+                                ${dTrack ? `<a href="${dTrack}" target="_blank" class="live-btn">LIVE TRACK</a>` : '<span style="font-size:0.7rem; color:#555;">Arriving Soon</span>'}
+                            </div>
+                            <div class="driver-row">
+                                <div class="d-img-bg"><i class="fa-solid fa-user-shield" style="font-size:1.2rem; color:#444;"></i></div>
+                                <div>
+                                    <div style="font-weight:700; font-size:0.95rem;">${dName}</div>
+                                    <div style="font-size:0.75rem; color:#666;">Vaccinated & Trained</div>
+                                </div>
+                                ${dPhone ? `<a href="tel:${dPhone}" class="call-btn-circle" style="margin-left:auto;"><i class="fa-solid fa-phone"></i></a>` : ''}
+                            </div>
+                        </div>`;
+                    }
+
+                    // Payment Badge Logic
+                    let payBadge = o.paymentMode === 'Online' 
+                        ? '<span style="background:#E8F5E9; color:#2E7D32; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-left:5px;">PAID</span>' 
+                        : '<span style="background:#eee; color:#666; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-left:5px;">COD</span>';
+
+                    lst.innerHTML += `
+                    <div class="order-card st-${st}" onclick="openBill('${o.id}')">
+                        <div class="flex-between" style="margin-bottom:10px; border-bottom:1px dashed #eee; padding-bottom:10px;">
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <div style="background:#f0f0f0; width:35px; height:35px; border-radius:8px; display:grid; place-items:center;"><i class="fa-solid fa-box"></i></div>
+                                <div>
+                                    <div style="font-weight:700;">#${o.id.slice(-5).toUpperCase()}</div>
+                                    <div style="font-size:0.75rem; color:#888;">${new Date(o.createdAt).toLocaleString()}</div>
+                                </div>
+                            </div>
+                            <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; padding:4px 8px; border-radius:5px;" class="st-${st}">${st.replace('_',' ')}</span>
+                        </div>
+                        <div style="font-size:0.85rem; color:#555; margin-bottom:12px;">
+                            ${o.items.map(i => `${i.qty} x ${escapeHtml(i.name)}`).join(', ')}
+                        </div>
+                        ${trackingUI}
+                        <div class="flex-between" style="margin-top:10px;">
+                            <div style="font-weight:800; font-size:1.1rem;">₹${o.total} ${payBadge}</div>
+                            <div style="font-size:0.8rem; font-weight:700; color:var(--brand);">Details <i class="fa-solid fa-chevron-right"></i></div>
+                        </div>
+                    </div>`;
+                });
+        }
+
+        window.openBill = async (oid) => {
+            const s = await get(ref(db, `orders/${oid}`));
+            const o = s.val();
+            const b = document.getElementById('bill-content');
+            
+            const pMethod = o.paymentMode || 'COD';
+            const pId = o.paymentId ? `<div style="font-size:0.75rem; color:#666;">TXN: ${o.paymentId}</div>` : '';
+
+            b.innerHTML = `
+                <div class="flex-between" style="margin-bottom:20px;">
+                    <h3 style="margin:0;">Order Receipt</h3>
+                    <div class="center" style="width:30px; height:30px; background:#f5f5f5; border-radius:50%; cursor:pointer;" onclick="shutMod()"><i class="fa-solid fa-xmark"></i></div>
+                </div>
+                <div style="text-align:center; margin-bottom:20px;">
+                    <div style="font-weight:800; color:var(--brand); font-size:1.2rem; text-transform:uppercase;">Govinda's Prasadam</div>
+                    <div style="font-size:0.85rem; color:#888;">ISKCON Hadapsar</div>
+                    <div style="margin-top:5px; font-weight:700; font-size:0.9rem;">${pMethod} ${pId}</div>
+                </div>
+                <div style="border-top:2px dashed #eee; padding-top:15px;">
+                    ${o.items.map(i => `<div class="flex-between" style="font-size:0.9rem; margin-bottom:10px;"><span>${i.qty} x ${escapeHtml(i.name)}</span><span style="font-weight:600;">₹${i.price*i.qty}</span></div>`).join('')}
+                </div>
+                <div style="border-top:1px solid #eee; margin-top:10px; padding-top:10px;">
+                    <div class="flex-between" style="font-size:0.9rem; margin-bottom:5px;"><span>Subtotal</span><span>₹${o.subTotal}</span></div>
+                    <div class="flex-between" style="font-size:0.9rem; margin-bottom:5px; color:var(--success);"><span>Discount</span><span>- ₹${o.discount}</span></div>
+                    <div class="flex-between" style="font-size:0.9rem; margin-bottom:5px;"><span>Delivery</span><span>₹${o.deliveryFee}</span></div>
+                    <div class="flex-between" style="font-weight:800; font-size:1.2rem; margin-top:15px; border-top:2px dashed #aaa; padding-top:15px;"><span>Paid Total</span><span>₹${o.total}</span></div>
+                </div>
+                <div style="text-align:center; margin-top:30px; font-size:0.75rem; color:#ccc;">Hare Krishna! Served with love.</div>
+            `;
+            document.getElementById('m-bill').classList.add('open');
+        }
+
+        window.nav = (p, el, addToHistory = true) => {
+            if(addToHistory) history.pushState({ view: p }, null, "");
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hide'));
+            document.getElementById(p).classList.remove('hide');
+            
+            if(el) { 
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); 
+                el.classList.add('active'); 
+            } else {
+                const btns = document.querySelectorAll('.nav-btn');
+                btns.forEach(b => b.classList.remove('active'));
+                if(p === 'view-home') btns[0].classList.add('active');
+                if(p === 'view-cart') btns[1].classList.add('active');
+                if(p === 'view-orders') btns[2].classList.add('active');
+                if(p === 'view-profile') btns[3].classList.add('active');
+            }
+            
+            const head = document.getElementById('header-main');
+            const float = document.getElementById('float-bar');
+            
+            if(p === 'view-home') { 
+                head.style.display = 'flex'; 
+                refreshCart(); 
+            } else { 
+                head.style.display = 'none'; 
+                float.style.display = 'none'; 
+            }
+
+            const navBar = document.getElementById('navbar');
+            if(p === 'view-product') {
+                 navBar.classList.add('hide');
+            } else {
+                 navBar.classList.remove('hide');
+            }
+            window.scrollTo(0,0);
+        };
+
+        window.addEventListener('popstate', (e) => {
+            if(e.state && e.state.view) nav(e.state.view, null, false);
+            else { history.pushState(null, null, location.href); document.getElementById('m-exit').classList.add('open'); }
+        });
+
+        window.closeExitModal = () => document.getElementById('m-exit').classList.remove('open');
+        window.confirmExit = () => { history.back(); history.back(); window.location.href = "about:blank"; };
+
+        window.findLoc = () => {
+            toast("Detecting GPS...");
+            navigator.geolocation.getCurrentPosition(p => {
+                const s = `GPS: ${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`;
+                document.getElementById('disp-addr').innerText = "Current Location";
+                document.getElementById('final-addr').value = s;
+                document.getElementById('e-addr').value = s;
+                toast("Location Updated");
+            });
+        };
+
+        window.filt = (c,el) => {
+            document.querySelectorAll('.cat-item').forEach(x => x.classList.remove('active')); 
+            el.classList.add('active');
+            c === 'all' ? renderMenu(PRODS) : renderMenu(PRODS.filter(x => x.category === c));
+        };
+
+        // UI HELPERS
+        window.shutMod = () => { document.querySelectorAll('.modal').forEach(m => m.classList.remove('open')); };
+        window.openEdit = () => { 
+            if(IS_GUEST) { toast("Login required"); return; }
+            document.getElementById('m-edit').classList.add('open'); 
+        };
+        window.saveProfile = () => {
+            const n = escapeHtml(val('e-name')); 
+            const p = val('e-phone'); 
+            const a = escapeHtml(val('e-addr'));
+            
+            if(!isValidPhone(p)) return toast("Invalid Phone (10 digits required)");
+
+            update(ref(db, `customers/${USER.uid}`), {name:n, phone:p, address:a});
+            toast("Profile Updated"); shutMod();
+        };
+
+        window.onclick = function(event) { if (event.target.classList.contains('modal')) shutMod(); };
+        function val(id){ return document.getElementById(id).value; }
+        function err(m){ document.getElementById('auth-msg').innerText = m.replace('Firebase:',''); }
+        function toast(m){ 
+            document.getElementById('toast-msg').innerText=m; 
+            const t = document.getElementById('toast'); 
+            t.classList.add('show'); 
+            setTimeout(()=>t.classList.remove('show'), 3000); 
+        }
+
+    </script>
+</body>
+</html>
