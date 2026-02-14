@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Govinda's Prasadam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --brand: #FF6D00; --text-main: #1A1A1A; }
+        body { font-family: 'Manrope', sans-serif; background: #F9FAFB; margin: 0; }
+        .page-header { background: white; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; }
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        .contact-card { background: white; padding: 25px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; align-items: flex-start; gap: 20px; }
+        .icon-box { width: 50px; height: 50px; background: #FFF3E0; color: var(--brand); border-radius: 50%; display: grid; place-items: center; font-size: 1.2rem; flex-shrink: 0; }
+        .c-label { font-size: 0.9rem; color: #888; font-weight: 600; text-transform: uppercase; margin-bottom: 5px; }
+        .c-val { font-size: 1.1rem; font-weight: 700; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <a href="index.html" style="color:#333;"><i class="fa-solid fa-arrow-left"></i></a>
+        <h3 style="margin:0;">Contact Support</h3>
+    </div>
+
+    <div class="container">
+        <div class="contact-card">
+            <div class="icon-box"><i class="fa-solid fa-location-dot"></i></div>
+            <div>
+                <div class="c-label">Registered Address</div>
+                <div class="c-val">ISKCON Hadapsar, <br>S.No 123, Katraj - Kondhwa Road,<br>Pune, Maharashtra - 411048</div>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <div class="icon-box"><i class="fa-solid fa-phone"></i></div>
+            <div>
+                <div class="c-label">Phone Number</div>
+                <div class="c-val"><a href="tel:+919999988888" style="text-decoration:none; color:inherit;">+91 99999 88888</a></div>
+                <div style="font-size:0.85rem; color:#666; margin-top:5px;">(Mon-Sun: 9:00 AM - 9:00 PM)</div>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <div class="icon-box"><i class="fa-solid fa-envelope"></i></div>
+            <div>
+                <div class="c-label">Email Address</div>
+                <div class="c-val"><a href="mailto:support@iskconhadapsar.com" style="text-decoration:none; color:inherit;">support@iskconhadapsar.com</a></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
