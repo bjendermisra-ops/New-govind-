@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "f74f4781-a013-40e7-b6f9-53e6a6a7530d",
+      safari_web_id: "web.onesignal.auto.599df49f-4478-46e8-9089-3c95d63b63cf",
+      notifyButton: {
+        enable: true,
+      },
+    });
+  });
+</script>
+
+
+
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RK FOOD | Premium Experience</title>
