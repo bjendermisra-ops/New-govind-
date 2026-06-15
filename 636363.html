@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="theme-color" content="#FF9933">
+    <title>ISKCON Hadapsar</title>
+    
+    <!-- Preconnect & Preload for Ultra-Fast Paint -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://unpkg.com">
+    
+    <!-- Stylesheets with optimized loading -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600;800&family=Dancing+Script:wght@700&family=Noto+Sans+Devanagari:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
+    
+    <style>
+        /* CSS Variables */
+        :root { 
+            --primary: #FF9933; 
+            --secondary: #4a2c2a; 
+            --bg-color: #FAFAFA; 
+            --card-bg: #ffffff; 
+            --text-color: #2b2b2b; 
+            --logo-size: 42px; 
+            --text-img-height: 46px; 
+            --slider-height: clamp(300px, 50vw, 360px); 
+            --event-date-size: 2.8rem; 
+            --event-text-size: 1.15rem; 
+            --icon-size: 1.8rem; 
+            --card-text-size: 0.75rem; 
+            --ui-shadow: 0 4px 18px rgba(0, 0, 0, 0.05); 
+            --powerful-shadow: 0 10px 30px rgba(255, 153, 51, 0.25); 
+            --epic-shadow: 0 12px 35px rgba(216, 27, 96, 0.3); 
+            --transition-speed: 0.3s; 
+            --bs-gutter-x: 1.5rem; 
+            --bs-gutter-y: 0; 
+        }
+        [data-theme="dark"] { 
+            --primary: #FF9933; 
+            --secondary: #140804; 
+            --bg-color: #121212; 
+            --card-bg: #1e1e1e; 
+            --text-color: #ececec; 
+            --ui-shadow: 0 4px 18px rgba(0, 0, 0, 0.4); 
+            --powerful-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); 
+            --epic-shadow: 0 12px 35px rgba(216, 27, 96, 0.4); 
+        }
+        
+        /* Layout Fixes */
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Poppins', 'Noto Sans Devanagari', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; 
+            color: var(--text-color); 
+            transition: background-color var(--transition-speed), color var(--transition-speed); 
+            padding-bottom: 0; 
+            margin: 0; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        a { text-decoration: none; color: var(--primary); }
+
+        /* Performance & Rendering Optimizations */
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; box-sizing: border-box; }
+        .feature-card, .preview-card, .menu-item, .padyatra-card, .calendar-premium-card, .master-lyrics-box { 
+            will-change: transform; 
+            transform: translate3d(0, 0, 0); 
+            backface-visibility: hidden; 
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+        }
+        .h-scroll { content-visibility: auto; contain-intrinsic-size: 155px; }
+
+        /* Splash Screen */
+        #app-splash { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: var(--bg-color); 
+            z-index: 99999; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+        }
+        body.is-loaded #app-splash { opacity: 0; pointer-events: none; }
+        .splash-logo { 
+            width: 100px; 
+            height: 100px; 
+            border-radius: 50%; 
+            box-shadow: 0 0 30px rgba(255, 153, 51, 0.5); 
+            animation: splashPulse 1.2s infinite alternate ease-in-out; 
+            margin-bottom: 20px; 
+            border: 3px solid var(--primary); 
+        }
+        .splash-text { font-family: 'Cinzel', serif; font-weight: 800; font-size: 1.5rem; color: var(--primary); letter-spacing: 2px; }
+        .splash-spinner { margin-top: 15px; width: 3rem; height: 3rem; border-width: 0.3em; color: var(--primary); }
+        @keyframes splashPulse { 
+            0% { transform: scale3d(0.95, 0.95, 1); box-shadow: 0 0 15px rgba(255,153,51,0.3); } 
+            100% { transform: scale3d(1.05, 1.05, 1); box-shadow: 0 0 40px rgba(255,153,51,0.7); } 
+        }
+
+        /* Navbar Hidden Completely - Cleans up UI for native AppCreator24 layout */
+        .navbar { 
+            display: none !important; 
+        }
+        
+        /* Ticker - HW Accelerated */
+        .mantra-ticker { 
+            background-color: #fff3e0; 
+            color: #d84315; 
+            padding: 8px 0; 
+            overflow: hidden; 
+            white-space: nowrap; 
+            display: flex; 
+            align-items: center; 
+            border-bottom: 2px solid rgba(255, 153, 51, 0.3); 
+            font-family: 'Cinzel', serif; 
+            font-weight: 800; 
+            font-size: 0.85rem; 
+            letter-spacing: 0.5px; 
+            transform: translate3d(0,0,0); 
+            margin-top: 0; 
+        }
+        [data-theme="dark"] .mantra-ticker { background-color: #2e1503; color: #ffb74d; border-bottom: 2px solid rgba(255, 153, 51, 0.2); }
+        .mantra-ticker-content { 
+            display: inline-block; 
+            white-space: nowrap; 
+            animation: textScroll 22s linear infinite; 
+            transform: translate3d(0, 0, 0); 
+        } 
+        .ticker-span { padding-right: 40px; } 
+        .ticker-span i { font-size: 0.7rem; vertical-align: middle; color: var(--primary); margin: 0 5px; animation: spinFast 4s linear infinite; } 
+        @keyframes textScroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } } 
+        @keyframes spinFast { 100% { transform: rotate(360deg); } }
+
+        /* Premium Dashboard Language Switcher */
+        .dashboard-lang-switcher {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 8px 14px;
+            box-shadow: var(--ui-shadow);
+            border: 1.5px solid rgba(255, 153, 51, 0.2);
+            transition: all var(--transition-speed);
+        }
+        [data-theme="dark"] .dashboard-lang-switcher {
+            border-color: rgba(255, 153, 51, 0.1);
+        }
+        .lang-switcher-label {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .lang-switcher-label i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        .lang-pills {
+            display: flex;
+            gap: 6px;
+        }
+        .lang-pill {
+            background: rgba(150, 150, 150, 0.08);
+            border: 1.5px solid transparent;
+            color: var(--text-color);
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .lang-pill.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 153, 51, 0.3);
+            transform: scale(1.03);
+            border-color: var(--primary);
+        }
+
+        /* Offcanvas Menu */
+        .offcanvas { 
+            background: rgba(var(--card-bg-rgb, 255, 255, 255), 0.98); 
+            color: var(--text-color); 
+            width: 290px !important; 
+            border-radius: 0 20px 20px 0; 
+            box-shadow: 15px 0 30px rgba(0,0,0,0.2) !important; 
+            border-right: 1px solid rgba(255,153,51,0.2); 
+            transition: transform 0.25s ease-in-out;
+        } 
+        [data-theme="dark"] .offcanvas { background: rgba(30, 30, 30, 0.98); } 
+        .offcanvas-header { background: linear-gradient(135deg, rgba(255,153,51,0.1), transparent); border-bottom: 1px solid rgba(255, 153, 51, 0.2); padding: 20px 15px; } 
+        .menu-item { padding: 14px 16px; display: flex; align-items: center; font-size: 0.98rem; font-weight: 500; color: var(--text-color); border-radius: 12px; margin-bottom: 6px; transition: background 0.2s ease, transform 0.15s ease; cursor: pointer; text-decoration: none; } 
+        .menu-item:hover { background: rgba(255, 153, 51, 0.1); transform: translateX(5px); }
+        .menu-item i { width: 35px; font-size: 1.2rem; color: var(--primary); text-align: left; } 
+        .pulse-heart { animation: pulseHeart 1.5s infinite; color: #ff1744 !important; filter: drop-shadow(0 0 5px rgba(255,23,68,0.5)); } 
+        @keyframes pulseHeart { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } } 
+        .dev-contact-menu { background: rgba(216, 27, 96, 0.05); border: 1px dashed rgba(216, 27, 96, 0.3); } 
+        
+        .lang-chips-container { display: flex; gap: 6px; margin-bottom: 15px; background: rgba(150,150,150,0.08); padding: 6px; border-radius: 14px; border: 1px solid rgba(255,153,51,0.15); box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); }
+        .lang-chip { flex: 1; text-align: center; padding: 10px 4px; font-size: 0.8rem; font-weight: 700; border-radius: 10px; cursor: pointer; transition: 0.2s ease; border: 1.5px solid transparent; color: var(--text-color); opacity: 0.7; }
+        .lang-chip.active { background: var(--card-bg); color: var(--primary); border-color: var(--primary); opacity: 1; box-shadow: 0 4px 12px rgba(255,153,51,0.2); transform: scale(1.02); }
+
+        /* Slider - Optimized Hardware Accelerated Ken Burns */
+        .hero-slider { margin: 15px 16px 15px 16px; border-radius: 22px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.15); z-index: 1; border: 2px solid rgba(255,255,255,0.2); transform: translate3d(0,0,0); }
+        [data-theme="dark"] .hero-slider { border-color: rgba(255,255,255,0.05); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .carousel-fade .carousel-item { opacity: 0; transition-duration: 0.35s; transition-property: opacity; will-change: opacity; } 
+        .carousel-fade .carousel-item.active { opacity: 1; }
+        .carousel-item { height: var(--slider-height); background: var(--secondary); overflow: hidden; position: relative; transform: translate3d(0,0,0); backface-visibility: hidden; }
+        .carousel-item img { object-fit: cover; height: 100%; width: 100%; filter: brightness(0.85); transform: scale3d(1, 1, 1); transition: transform 5s ease-in-out; }
+        .carousel-item.active img { animation: kenBurns 12s infinite alternate ease-in-out; } 
+        @keyframes kenBurns { 0% { transform: scale3d(1, 1, 1); } 100% { transform: scale3d(1.1, 1.1, 1); } }
+
+        /* Slide variations */
+        .date-slide { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle at center, #FF6F00 0%, #E65100 100%); color: white; text-align: center; padding: 15px; box-sizing: border-box; overflow: hidden; } 
+        .date-slide::after { content: ""; position: absolute; width: 150%; height: 150%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: pulseBg 4s infinite alternate; transform: translate3d(0,0,0); } 
+        @keyframes pulseBg { 0% { transform: scale3d(1, 1, 1); opacity: 0.5; } 100% { transform: scale3d(1.1, 1.1, 1); opacity: 0.9; } } 
+        .date-slide h1 { font-family: 'Cinzel', serif; font-size: clamp(3.5rem, 12vw, 4.5rem); margin: 0; line-height: 1; text-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 2; position: relative; } 
+        .date-slide p { font-size: clamp(0.85rem, 3vw, 1rem); margin: 5px 0 10px 0; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; z-index: 2; position: relative; } 
+        .live-clock { font-family: monospace, sans-serif; background: rgba(0,0,0,0.4); padding: 5px 20px; border-radius: 30px; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); font-size: 1.2rem; letter-spacing: 2px; z-index: 2; position: relative; } 
+        .date-slide.has-event { padding: 20px 10px; } 
+        .date-slide.has-event h1 { font-size: clamp(2.2rem, 8vw, var(--event-date-size)); margin-bottom: 2px; } 
+        .date-slide.has-event .month-year { font-size: 0.85rem; margin: 0 0 5px 0; opacity: 0.95; }
+        .ekadasi-alert { font-size: clamp(0.85rem, 3.5vw, var(--event-text-size)); font-weight: 700; line-height: 1.25; margin: 5px 0; padding: 10px 14px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 14px; width: 95%; max-width: 320px; z-index: 2; position: relative; text-shadow: 0 2px 5px rgba(0,0,0,0.5); box-shadow: 0 8px 20px rgba(0,0,0,0.3); } 
+        .ekadasi-btn { background: #fff; color: #E65100; padding: 8px 24px; border-radius: 25px; font-weight: 800; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 5px; margin-top: 5px; z-index: 2; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: transform 0.2s; }
+
+        .name-slide { height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: white; padding: 10px; position: relative; overflow: hidden; transform: translate3d(0,0,0); }
+        .ns-bday { background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%); color: #880e4f; } 
+        .ns-bday::before { content: '🎊'; position: absolute; font-size: 10rem; opacity: 0.1; top: -20px; left: -20px; transform: rotate(-20deg); }
+        .ns-anni { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #4a148c; } 
+        .ns-anni::before { content: '💍'; position: absolute; font-size: 10rem; opacity: 0.1; bottom: -20px; right: -20px; transform: rotate(20deg); }
+        .ns-donate { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #004d40; } 
+        .ns-donate::before { content: '🌸'; position: absolute; font-size: 10rem; opacity: 0.1; top: 30%; left: 30%; animation: spinSlow 20s linear infinite; }
+        .ns-notice { background: linear-gradient(135deg, #FFC371 0%, #FF5F6D 100%); color: #3e2723; } 
+        @keyframes spinSlow { 100% { transform: rotate(360deg); } }
+        .ns-header { font-family: 'Dancing Script', cursive; font-weight: 800; text-shadow: 0 2px 4px rgba(255,255,255,0.6); animation: popIn 0.5s ease; line-height: 1.1; z-index: 2; position: relative; }
+        .name-container { width: 95%; max-height: 85%; background: rgba(255,255,255,0.85); border-radius: 16px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.9); z-index: 2; position: relative; overflow: hidden; display: grid; align-content: center; justify-content: center; gap: 6px; }
+        .person-container { background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.06); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 6px 4px; overflow: hidden; }
+        .truncate { width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; }
+        .person-name { font-weight: 800; line-height: 1.2; font-family: 'Poppins', sans-serif; color: inherit; } 
+        .person-role { font-weight: 700; opacity: 0.85; margin-top: 2px; line-height: 1.1; } 
+        .person-address { font-weight: 600; opacity: 0.75; margin-top: 2px; line-height: 1.1; }
+        .notice-btn { display: inline-flex; align-items: center; background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.1); border-radius: 20px; color: inherit; text-decoration: none; font-weight: 800; padding: 2px 8px; font-size: 0.6rem; margin-top: 2px; }
+        .layout-1, .layout-2 { grid-template-columns: 1fr; }
+        .layout-3, .layout-4, .layout-5, .layout-6, .layout-7, .layout-8 { grid-template-columns: repeat(2, 1fr); }
+        .layout-1 .person-name, .layout-2 .person-name { font-size: 1.4rem; white-space: normal; }
+        .layout-5 .person-name, .layout-6 .person-name, .layout-7 .person-name, .layout-8 .person-name { font-size: 0.85rem; } 
+        @keyframes popIn { 0% { transform: scale3d(0.8, 0.8, 1) translateY(10px); opacity: 0; } 100% { transform: scale3d(1, 1, 1) translateY(0); opacity: 1; } }
+        
+        .carousel-progress { position: absolute; bottom: 0; left: 0; height: 4px; background: rgba(255,255,255,0.8); z-index: 10; border-radius: 0 4px 4px 0; } 
+        @keyframes progressFill { 0% { width: 0%; } 100% { width: 100%; } }
+
+        /* Highlighted Padyatra CTA Card */
+        .padyatra-card { 
+            margin: 15px; 
+            background: linear-gradient(135deg, #FF6F00, #FF9933, #E65100); 
+            background-size: 200% auto;
+            animation: gradientMove 6s ease infinite, padyatraPulse 2.5s infinite alternate;
+            border-radius: 20px; 
+            padding: 18px 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            box-shadow: 0 8px 25px rgba(230, 81, 0, 0.45); 
+            position: relative; 
+            overflow: hidden; 
+            text-decoration: none; 
+            border: 2px solid rgba(255, 255, 255, 0.45); 
+        }
+        [data-theme="dark"] .padyatra-card { 
+            background: linear-gradient(135deg, #E65100, #bf360c); 
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6); 
+            border-color: rgba(255, 255, 255, 0.15); 
+        }
+        @keyframes padyatraPulse {
+            0% { transform: scale3d(1, 1, 1); box-shadow: 0 8px 25px rgba(230, 81, 0, 0.45); }
+            100% { transform: scale3d(1.025, 1.025, 1); box-shadow: 0 12px 30px rgba(230, 81, 0, 0.65); }
+        }
+        .py-bg-shapes { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 1; }
+        .py-bg-shapes::before { 
+            content: '🚩'; 
+            position: absolute; 
+            right: 8%; 
+            top: 15%; 
+            font-size: 3.5rem; 
+            opacity: 0.25; 
+            transform: rotate(15deg); 
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+        }
+        .py-content { display: flex; align-items: center; gap: 15px; width: 100%; z-index: 2; position: relative; }
+        .py-icon { width: 50px; height: 50px; background: rgba(255,255,255,0.3); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #fff; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .py-text { flex-grow: 1; display: flex; flex-direction: column; }
+        .py-text h4 { margin: 0; font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.35); letter-spacing: 0.5px; }
+        .py-text p { margin: 2px 0 0 0; font-size: 0.78rem; color: rgba(255,255,255,0.98); font-weight: 600; line-height: 1.2; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .py-btn { background: #fff; color: #E65100; font-size: 0.8rem; font-weight: 800; padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); white-space: nowrap; transition: background 0.2s; }
+
+        /* Feature Cards */
+        .feature-card { background: var(--card-bg); border-radius: 18px; padding: 15px 6px; text-align: center; box-shadow: var(--ui-shadow); display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid rgba(150,150,150,0.1); cursor: pointer; position: relative; overflow: hidden; height: 100%; text-decoration: none; } 
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(255, 153, 51, 0.15); }
+        .feature-card::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%); transform: rotate(45deg) translate(-100%, -100%); z-index: 1; pointer-events: none; animation: cardShimmer 5s infinite; }
+        [data-theme="dark"] .feature-card::after { background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%); } 
+        @keyframes cardShimmer { 0%, 75% { transform: rotate(45deg) translate(-100%, -100%); } 100% { transform: rotate(45deg) translate(100%, 100%); } } 
+        .feature-card i { font-size: var(--icon-size); color: var(--primary); margin-bottom: 8px; z-index: 2; transition: transform 0.2s; } 
+        .feature-card span { font-size: var(--card-text-size); font-weight: 700; line-height: 1.15; padding: 0 3px; z-index: 2; color: var(--text-color); } 
+        .live-dot { position: absolute; top: 12px; right: 28%; width: 10px; height: 10px; background-color: #ff1744; border-radius: 50%; box-shadow: 0 0 0 2px white, 0 0 10px red; animation: livePulseFast 0.8s infinite alternate; z-index: 2; } 
+        .new-badge { position: absolute; top: 0px; right: 0px; background: linear-gradient(90deg, #43a047, #66bb6a); color: white; padding: 4px 10px; border-radius: 0 16px 0 12px; font-size: 0.6rem; font-weight: 800; z-index: 2; letter-spacing: 0.5px; } 
+        @keyframes livePulseFast { 0% { opacity: 1; transform: scale3d(0.8, 0.8, 1); } 100% { opacity: 0.4; transform: scale3d(1.4, 1.4, 1); } }
+        
+        .gita-daily-thought { background: linear-gradient(135deg, rgba(255, 153, 51, 0.08), rgba(255, 153, 51, 0.02)); border: 1.5px solid rgba(255, 153, 51, 0.2); border-left: 6px solid var(--primary); border-radius: 16px; margin: 12px 15px 18px 15px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(255,153,51,0.06); }
+        [data-theme="dark"] .gita-daily-thought { background: linear-gradient(135deg, rgba(255, 153, 51, 0.08), #1e1e1e); } 
+        .g-t-head { display: flex; align-items: center; gap: 6px; font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 800; color: var(--primary); margin-bottom: 5px; z-index: 2; } 
+        .g-t-text { font-size: 0.85rem; font-style: italic; font-weight: 500; color: var(--text-color); opacity: 0.9; line-height: 1.5; z-index: 2; }
+        
+        .calendar-premium-card { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #7c3aed, #4c1d95); border-radius: 18px; padding: 16px 20px; margin: 0 15px 15px 15px; text-decoration: none; color: white; box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3); position: relative; overflow: hidden; transform: translate3d(0,0,0); } 
+        .calendar-premium-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(124, 58, 237, 0.45); }
+        .calendar-premium-card::before { content: ''; position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; background: rgba(255,255,255,0.08); border-radius: 50%; pointer-events: none; } 
+        .cal-icon-wrapper { display: flex; align-items: center; gap: 16px; z-index: 1; } 
+        .cal-icon { font-size: 2.2rem; color: #ddd6fe; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); } 
+        .cal-text h4 { margin: 0; font-size: 1.05rem; font-weight: 800; font-family: 'Cinzel', serif; letter-spacing: 0.5px; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.3); } 
+        .cal-text p { margin: 2px 0 0 0; font-size: 0.75rem; color: #ddd6fe; font-weight: 500; transition: color var(--transition-speed); }
+
+        .master-lyrics-box { margin: 15px; position: relative; border-radius: 16px; box-shadow: var(--epic-shadow); background: linear-gradient(135deg, #ad1457 0%, #D81B60 100%); overflow: hidden; display: flex; flex-direction: column; transform: translate3d(0,0,0); } 
+        .master-lyrics-box:hover { transform: translateY(-4px); box-shadow: 0 15px 40px rgba(216, 27, 96, 0.45); }
+        .lyric-read-action { display: flex; align-items: center; text-decoration: none; padding: 12px 16px; position: relative; color: white; text-align: left; z-index: 2; gap: 14px; } 
+        .epic-book-icon { width: 44px; height: 44px; flex-shrink: 0; margin: 0; background: rgba(255,255,255,0.15); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: #ffeb3b; border: 1.5px solid rgba(255,235,59,0.5); position: relative; z-index: 3; } 
+        .lyric-text-group { display: flex; flex-direction: column; flex-grow: 1; justify-content: center; } 
+        .lyric-title { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 800; margin: 0; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 3; position: relative; letter-spacing: 0.5px; color: white; } 
+        .lyric-sub { font-size: 0.72rem; font-family: 'Poppins', sans-serif; font-weight: 500; margin-top: 3px; position: relative; z-index: 3; color: rgba(255,255,255,0.95); opacity: 0.9; } 
+        .lyrics-bottom-bar { background: rgba(0,0,0,0.25); border-top: 1px solid rgba(255,255,255,0.1); display: flex; padding: 8px 10px; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; position: relative; z-index: 5; } 
+        .mini-meta-chip { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 4px 10px; font-size: 0.7rem; font-weight: 600; color: white; letter-spacing: 0.5px; text-decoration: none; transition: transform 0.2s; } 
+        .mini-meta-chip:hover { transform: scale(1.05); background: rgba(255,255,255,0.2); }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin: 20px 10px 15px 10px; } 
+        .section-title { font-family: 'Cinzel', 'Noto Sans Devanagari', serif; color: var(--text-color); font-size: 1.2rem; font-weight: 800; margin: 0; border-left: 6px solid var(--primary); padding-left: 10px; line-height: 1.2; } 
+        .see-all { font-size: 0.8rem; font-weight: 700; color: white !important; background: linear-gradient(45deg, var(--primary), #E65100); padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 12px rgba(255, 153, 51, 0.4); text-decoration: none; transition: transform 0.2s; } 
+        .see-all:hover { transform: scale(1.05); }
+        
+        /* Smooth Horizontal Scrolling */
+        .h-scroll { 
+            display: flex; 
+            overflow-x: auto; 
+            gap: 15px; 
+            padding: 4px 16px 20px 16px; 
+            scroll-behavior: smooth; 
+            -webkit-overflow-scrolling: touch; 
+            scrollbar-width: thin; 
+            scrollbar-color: rgba(255, 153, 51, 0.3) transparent; 
+        } 
+        .h-scroll::-webkit-scrollbar { height: 4px; } 
+        .h-scroll::-webkit-scrollbar-track { background: transparent; }
+        .h-scroll::-webkit-scrollbar-thumb { background-color: rgba(255, 153, 51, 0.4); border-radius: 10px; }
+
+        /* Preview Cards */
+        .preview-card { flex-shrink: 0; min-width: 155px; width: 155px; height: 155px; background: #000; border-radius: 18px; overflow: hidden; box-shadow: var(--ui-shadow); border: 1px solid rgba(150,150,150,0.08); position: relative; cursor: pointer; transform: translate3d(0,0,0); } 
+        .preview-card:hover { transform: scale(1.03); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25); }
+        .preview-img { width: 100%; height: 100%; object-fit: cover; display: block; } 
+        .preview-info { position: absolute; bottom: 0; left: 0; width: 100%; padding: 30px 12px 12px 12px; text-align: left; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 40%, transparent 100%); z-index: 2; pointer-events: none; } 
+        .preview-title { font-size: 0.95rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ffffff; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+        
+        .address-box { background: var(--card-bg); border-radius: 20px; padding: 25px; box-shadow: var(--powerful-shadow); margin: 30px 15px 10px 15px; text-align: center; border: 1.5px solid rgba(255, 153, 51, 0.4); position: relative; overflow: hidden; z-index: 1; } 
+        .address-box::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 7px; background: linear-gradient(90deg, #E65100, var(--primary), #E65100); } 
+        .address-text { font-size: 0.95rem; opacity: 0.8; margin-bottom: 20px; line-height: 1.6; font-weight: 500; } 
+        .map-btn, .copy-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 0.9rem; border: none; cursor: pointer; transition: transform 0.2s; } 
+        .map-btn { background: linear-gradient(135deg, var(--primary), #FF7043); color: white; box-shadow: 0 6px 18px rgba(255,153,51,0.35); } 
+        .copy-btn { background: rgba(255, 153, 51, 0.1); color: var(--primary); border: 2.5px solid var(--primary); }
+        .map-btn:hover, .copy-btn:hover { transform: scale(1.02); }
+
+        /* Premium Footer */
+        .premium-footer { background: linear-gradient(180deg, #3d1b19 0%, #0d0402 100%); color: #ffcc80; padding-top: 0; position: relative; margin-top: 50px; margin-bottom: 0; text-align: center; overflow: hidden; } 
+        .footer-wave { width: 100%; height: auto; display: block; fill: #3d1b19; margin-top: -30px; filter: drop-shadow(0px -5px 10px rgba(0,0,0,0.15)); } 
+        .footer-content { padding: 10px 20px 85px 20px; position: relative; z-index: 1; } 
+        .footer-logo-img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--primary); box-shadow: 0 0 35px rgba(255, 153, 51, 0.6); margin-bottom: 20px; background: #fff; } 
+        .footer-mantra { font-family: 'Cinzel', 'Noto Sans Devanagari', serif; font-size: 1rem; color: #fff; margin-bottom: 30px; letter-spacing: 0.5px; line-height: 1.6; opacity: 0.95; text-shadow: 0 3px 6px rgba(0,0,0,0.8); } 
+        .footer-links { margin-bottom: 30px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; } 
+        .footer-links a { color: #ffb74d; font-size: 0.9rem; text-decoration: none; font-weight: 700; opacity: 0.9; } 
+        .footer-social { display: flex; justify-content: center; gap: 18px; margin-bottom: 25px; } 
+        .f-icon { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-decoration: none; transition: transform 0.2s; } 
+        .f-icon:hover { transform: translateY(-3px); }
+        .footer-divider { height: 1.5px; background: linear-gradient(90deg, transparent, rgba(255,153,51,0.5), transparent); margin: 25px 0 15px 0; } 
+        .copyright { font-size: 0.85rem; opacity: 0.7; margin-bottom: 5px; font-weight: 400; } 
+        .dev-credit-box { display: inline-block; padding: 10px 18px; border-radius: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,153,51,0.2); cursor: pointer; text-decoration: none; position: relative; z-index: 5; } 
+        .dev-name { color: var(--primary); font-weight: 700; font-family: 'Dancing Script', cursive; font-size: 1.5rem; margin-left: 5px; letter-spacing: 1px; display: inline-block; } 
+        .dev-contact-hint { font-size: 0.65rem; color: #ffb74d; margin-top: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; }
+
+        /* Mappings Optimization */
+        .container-fluid { width: 100%; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto; box-sizing: border-box; } 
+        .row { display: flex; flex-wrap: wrap; margin-top: 0; margin-right: calc(-.5 * var(--bs-gutter-x)); margin-left: calc(-.5 * var(--bs-gutter-x)); box-sizing: border-box; } 
+        .row > * { box-sizing: border-box; flex-shrink: 0; width: 100%; max-width: 100%; padding-right: calc(var(--bs-gutter-x) * .5); padding-left: calc(var(--bs-gutter-x) * .5); } 
+        .col-4 { flex: 0 0 auto; width: 33.33333333%; } 
+        .col-6 { flex: 0 0 auto; width: 50%; } 
+        .g-2 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; margin-top: calc(-1 * var(--bs-gutter-y)); } 
+        .g-2 > * { margin-top: var(--bs-gutter-y); } 
+        .g-3 { --bs-gutter-x: 1rem; --bs-gutter-y: 1rem; margin-top: calc(-1 * var(--bs-gutter-y)); } 
+        .g-3 > * { margin-top: var(--bs-gutter-y); } 
+        .d-flex { display: flex !important; } 
+        .flex-column { flex-direction: column !important; } 
+        .justify-content-center { justify-content: center !important; } 
+        .justify-content-between { justify-content: space-between !important; } 
+        .align-items-center { align-items: center !important; } 
+        .flex-wrap { flex-wrap: wrap !important; } 
+        .flex-grow-1 { flex-grow: 1 !important; } 
+        .flex-shrink-0 { flex-shrink: 0 !important; } 
+        .m-0 { margin: 0 !important; } 
+        .mt-1 { margin-top: 0.25rem !important; } 
+        .mt-2 { margin-top: 0.5rem !important; } 
+        .mt-3 { margin-top: 1rem !important; } 
+        .mt-4 { margin-top: 1.5rem !important; } 
+        .mt-5 { margin-top: 3rem !important; } 
+        .mb-2 { margin-bottom: 0.5rem !important; } 
+        .mb-3 { margin-bottom: 1rem !important; } 
+        .ms-1 { margin-left: 0.25rem !important; } 
+        .me-1 { margin-right: 0.25rem !important; } 
+        .mx-1 { margin-right: 0.25rem !important; margin-left: 0.25rem !important; } 
+        .mx-2 { margin-right: 0.5rem !important; margin-left: 0.5rem !important; } 
+        .mx-3 { margin-right: 1rem !important; margin-left: 1rem !important; } 
+        .mx-n1 { margin-right: -0.25rem !important; margin-left: -0.25rem !important; } 
+        .mx-n2 { margin-right: -0.5rem !important; margin-left: -0.5rem !important; } 
+        .my-2 { margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; } 
+        .p-0 { padding: 0 !important; } 
+        .p-2 { padding: 0.5rem !important; } 
+        .pb-3 { padding-bottom: 1rem !important; } 
+        .pb-5 { padding-bottom: 3rem !important; } 
+        .px-3 { padding-right: 1rem !important; padding-left: 1rem !important; } 
+        .text-center { text-align: center !important; } 
+        .text-white { color: #fff !important; } 
+        .text-warning { color: #ffc107 !important; } 
+        .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important; } 
+        .shadow-lg { box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important; } 
+        .shadow-none { box-shadow: none !important; } 
+        .border-0 { border: 0 !important; } 
+        .h-100 { height: 100% !important; } 
+        .w-100 { width: 100% !important; } 
+        .d-inline-block { display: inline-block !important; } 
+        .d-none { display: none !important; }
+        
+        .offline-banner { display: none; background: linear-gradient(135deg, #d32f2f, #f44336); color: white; text-align: center; padding: 10px 15px; font-size: 0.85rem; font-weight: 700; z-index: 2000; width: 100%; box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4); position: sticky; top: 0; } 
+        body.is-offline .offline-banner { display: flex; justify-content: center; align-items: center; } 
+        body.is-offline .navbar { top: 0px; } 
+        
+        .offcanvas-start { position: fixed; top: 0; left: 0; width: 290px; height: 100vh; z-index: 1050; transform: translate3d(-100%, 0, 0); visibility: hidden; transition: transform 0.25s ease-in-out, visibility 0.25s ease-in-out; } 
+        .offcanvas.show { transform: translate3d(0, 0, 0); visibility: visible; } 
+        .offcanvas-backdrop-custom { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); z-index: 1045; opacity: 0; visibility: hidden; transition: opacity 0.25s ease-in-out; } 
+        .offcanvas-backdrop-custom.show { opacity: 1; visibility: visible; } 
+        .offcanvas-body { padding: 1rem; overflow-y: auto; height: calc(100vh - 70px); } 
+        .btn-close { box-sizing: content-box; width: 1em; height: 1em; padding: .25em .25em; color: #000; background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414-1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat; border: 0; border-radius: .375rem; opacity: .5; cursor: pointer; }
+        .carousel { position: relative; } 
+        .carousel-inner { position: relative; width: 100%; overflow: hidden; } 
+        .carousel-item { position: relative; display: none; float: left; width: 100%; margin-right: -100%; backface-visibility: hidden; transition: transform .4s ease-in-out; } 
+        .carousel-item.active { display: block; }
+
+        .support-fab { position: fixed; bottom: 25px; right: 20px; background: linear-gradient(135deg, #FF9933, #E65100); color: white; padding: 12px 18px; border-radius: 30px; box-shadow: 0 6px 20px rgba(230, 81, 0, 0.4); display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; z-index: 1000; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); animation: floatUpDown 3s infinite ease-in-out; }
+        @keyframes floatUpDown { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -8px, 0); } }
+
+        .support-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.25s ease; padding: 20px; }
+        .support-modal-overlay.show { opacity: 1; visibility: visible; }
+        .support-modal-card { background: var(--card-bg); width: 100%; max-width: 360px; border-radius: 24px; padding: 25px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.3); transform: scale3d(0.8, 0.8, 1) translateY(30px); transition: all 0.25s ease; border: 1px solid rgba(255, 153, 51, 0.2); }
+        .support-modal-overlay.show .support-modal-card { transform: scale3d(1, 1, 1) translateY(0); }
+        .sm-icon-wrapper { width: 60px; height: 60px; background: linear-gradient(135deg, rgba(255,153,51,0.15), rgba(230,81,0,0.1)); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 15px auto; border: 2px solid rgba(255, 153, 51, 0.3); }
+        .sm-title { font-size: 1.25rem; font-weight: 800; color: var(--text-color); margin-bottom: 12px; font-family: 'Cinzel', serif; } 
+        .sm-desc { font-size: 0.9rem; color: var(--text-color); opacity: 0.85; line-height: 1.6; margin-bottom: 25px; font-weight: 500; }
+        .sm-btn { background: linear-gradient(135deg, var(--primary), #E65100); color: white; border: none; width: 100%; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 0.95rem; box-shadow: 0 6px 15px rgba(255, 153, 51, 0.3); cursor: pointer; }
+
+        /* Big Glowing Live Button */
+        #big-live-alert { display: none; }
+        .big-live-btn { display: flex; align-items: center; gap: 15px; background: linear-gradient(135deg, #d32f2f, #ff1744); color: white; padding: 18px 20px; border-radius: 20px; text-decoration: none; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(211, 47, 47, 0.5); animation: bigGlow 1.5s infinite alternate; border: 2px solid rgba(255,255,255,0.2); }
+        @keyframes bigGlow { 0% { box-shadow: 0 8px 25px rgba(211, 47, 47, 0.5); transform: scale3d(1, 1, 1); } 100% { box-shadow: 0 12px 35px rgba(255, 23, 68, 0.8); transform: scale3d(1.02, 1.02, 1); } }
+        .live-pulse-ring { position: absolute; top: 50%; left: 30px; transform: translateY(-50%); width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; animation: ringPulse 1.5s infinite; pointer-events: none; }
+        @keyframes ringPulse { 0% { transform: translateY(-50%) scale3d(0.8, 0.8, 1); opacity: 1; } 100% { transform: translateY(-50%) scale3d(1.6, 1.6, 1); opacity: 0; } }
+        .bl-text { display: flex; flex-direction: column; } 
+        .bl-title { font-family: 'Cinzel', serif; font-weight: 800; font-size: 1.15rem; margin-bottom: 2px; } 
+        .bl-sub { font-size: 0.78rem; font-weight: 600; opacity: 0.95; font-family: 'Poppins', sans-serif; }
+        .big-live-btn i.fa-video { font-size: 1.9rem; z-index: 2; position: relative; } 
+        .big-live-btn i.fa-chevron-right { font-size: 1.3rem; }
+        .transition-col { transition: width 0.3s ease; }
+    </style>
+</head>
+<body>
+
+<!-- Super Fast Splash Screen -->
+<div id="app-splash">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh89ueri3DvWfVUmM76dyYJSTCLcDC6oYuAT3j-ezAKl5iDeJ97q28vt2MR39RJwL8BGI91we6F4DRj-u7j1EE2NPyQRwFs0HfYcB4HjxZ9VoeUQWGR7GdARSdow00uHqEehsr6gOVDFG15mntfIdNuOrQ_fxAZHCjMWU9kEjzaUMhuN52vsKMA6Tb9Dtx3/s256/1000096788.png" alt="Loading" class="splash-logo">
+    <div class="splash-text">HARE KRISHNA</div>
+    <div class="spinner-border splash-spinner" role="status"></div>
+</div>
+
+<script>
+    // Ultra-Fast Splash Screen Removal 
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(() => { document.body.classList.add('is-loaded'); }, 200); });
+    window.addEventListener('load', () => { document.body.classList.add('is-loaded'); });
+    setTimeout(() => { document.body.classList.add('is-loaded'); }, 1500); // Fail-safe
+</script>
+
+<div id="offline-banner" class="offline-banner">
+    <i class="fas fa-wifi-slash" style="margin-right:6px;"></i> <span data-key="offline_msg">You are currently offline. Showing saved version. Keep chanting!</span>
+</div>
+
+<div class="support-fab" onclick="openSupportModal()">
+    <i class="fas fa-heart"></i> <span data-key="fab_why_ads">Why Ads?</span>
+</div>
+
+<div class="support-modal-overlay" id="supportModalOverlay" onclick="closeSupportModal(event)">
+    <div class="support-modal-card" id="supportModalCard" onclick="event.stopPropagation()">
+        <div class="sm-icon-wrapper"><i class="fas fa-bullhorn"></i></div>
+        <h3 class="sm-title" data-key="ads_modal_title">Why do we show ads? 🙏</h3>
+        <p class="sm-desc" data-key="ads_modal_desc">Hare Krishna! To keep this app completely free, cover expensive server costs, manage our team, and continuously add new features, we use advertisements. This app is developed with love by a young devotee (born 2002!) dedicated to serving the community. Your support and patience mean the world to us! 🌸</p>
+        <button class="sm-btn" onclick="closeSupportModal(null)" data-key="ads_modal_close">I Understand & Support ❤️</button>
+    </div>
+</div>
+
+<div class="offcanvas-backdrop-custom" id="customBackdrop"></div>
+<div class="offcanvas offcanvas-start shadow-lg" tabindex="-1" id="appSidebar">
+    <div class="offcanvas-header mt-2 mx-2 d-flex justify-content-between align-items-center">
+        <h5 class="offcanvas-title m-0" style="font-family:'Cinzel',serif; color:var(--primary); font-weight:800; letter-spacing:1px;" data-key="menu_title">ISKCON Menu</h5>
+        <button type="button" class="btn-close shadow-none" id="closeSidebarBtn" style="filter: invert(0.6);"></button>
+    </div>
+    <div class="offcanvas-body px-3 pb-5">
+        
+        <div class="lang-chips-container shadow-sm">
+            <div class="lang-chip" data-lang="en" onclick="setLanguage('en')">🇬🇧 English</div>
+            <div class="lang-chip" data-lang="hi" onclick="setLanguage('hi')">🇮🇳 हिन्दी</div>
+            <div class="lang-chip" data-lang="mr" onclick="setLanguage('mr')">🚩 मराठी</div>
+        </div>
+        
+        <div class="menu-list mt-3">
+            <a href="go:home" class="menu-item"><i class="fas fa-home"></i> <span data-key="home">Home</span></a>
+            <a href="go:calendar" class="menu-item mt-2"><i class="far fa-calendar-alt"></i> <span data-key="ekadashi_cal">Ekadashi Calendar</span></a>
+            <a href="go:dono" class="menu-item mt-2"><i class="fab fa-whatsapp"></i> <span data-key="status">Donation</span></a>
+            <a href="go:pas" class="menu-item"><i class="fas fa-route" style="color: #FF9933;"></i> <span data-key="padyatra_title">ISKCON Padyatra</span></a>
+            <a href="go:chanting" class="menu-item"><i class="fas fa-om"></i> <span data-key="japa">Digital Japa</span></a>
+            <a href="go:mantras" class="menu-item"><i class="fas fa-book-journal-whills"></i> <span data-key="lyric_vault">Sacred Lyrics & Paath</span></a>
+            <a href="go:game" class="menu-item"><i class="fas fa-book-open-reader"></i> <span data-key="game">Stories & Games</span></a>
+            <a href="go:pune" class="menu-item"><i class="fas fa-gopuram"></i> <span data-key="pune_temples">Pune Temples</span></a>
+            <a href="go:schedule" class="menu-item mt-2"><i class="far fa-calendar-check"></i> <span data-key="schedule">Schedule</span></a>
+            <a href="go:darshan" class="menu-item"><i class="fas fa-video"></i> <span data-key="darshan">Live Darshan</span></a>
+            <a href="go:gallery" class="menu-item"><i class="fas fa-image"></i> <span data-key="gallery">Gallery</span></a>
+            <a href="go:tmp_vids" class="menu-item"><i class="fab fa-youtube"></i> <span data-key="videos">Temple Videos</span></a>
+            <a href="go:aud_krt" class="menu-item"><i class="fas fa-music"></i> <span data-key="kirtan">Bhajans & Aarti</span></a>
+            <a href="go:lec" class="menu-item"><i class="fas fa-headphones"></i> <span data-key="lectures">Katha & Kirtan</span></a>
+            
+            <div style="height:1px; background:linear-gradient(90deg,transparent,rgba(150,150,150,0.3),transparent); margin:15px 0;"></div>
+            <a href="go:contact" class="menu-item"><i class="fas fa-phone-alt"></i> <span data-key="contact">Contact</span></a>
+            <a href="go:about" class="menu-item"><i class="fas fa-info-circle"></i> <span data-key="about">About Us</span></a>
+            <a href="go:privacy" class="menu-item"><i class="fas fa-shield-alt"></i> <span data-key="privacy">Privacy Policy</span></a>
+            <a href="go:terms" class="menu-item"><i class="fas fa-file-contract"></i> <span data-key="terms">Terms & Conditions</span></a>
+            <div style="height:1px; background:linear-gradient(90deg,transparent,rgba(150,150,150,0.3),transparent); margin:15px 0;"></div>
+            
+            <a href="http://action_notifications" class="menu-item d-none"><i class="far fa-bell"></i> <span data-key="notif">Notifications</span></a>
+            <a href="http://action_share" class="menu-item"><i class="fas fa-share-nodes"></i> <span data-key="share">Share App</span></a>
+            <div style="height:1px; background:linear-gradient(90deg,transparent,rgba(150,150,150,0.3),transparent); margin:15px 0;"></div>
+            
+            <a href="go:dev" class="menu-item dev-contact-menu"><i class="fas fa-heart pulse-heart"></i> <span data-key="contact_dev">Contact Developer</span></a>
+            <div class="menu-item" onclick="toggleTheme()"><i class="far fa-moon" id="sidebarThemeIcon"></i> <span data-key="dark">Toggle Dark Mode</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Kept strictly for background event bindings but completely hidden via css rules -->
+<nav class="navbar" style="display:none !important;">
+    <div class="container-fluid px-3">
+        <div class="nav-left-group">
+            <button class="navbar-toggler shadow-none border-0 p-0 me-1" type="button" id="openSidebarBtn">
+                <i class="fas fa-bars text-white" style="font-size:1.45rem;"></i>
+            </button>
+            <a class="navbar-brand" href="#">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh89ueri3DvWfVUmM76dyYJSTCLcDC6oYuAT3j-ezAKl5iDeJ97q28vt2MR39RJwL8BGI91we6F4DRj-u7j1EE2NPyQRwFs0HfYcB4HjxZ9VoeUQWGR7GdARSdow00uHqEehsr6gOVDFG15mntfIdNuOrQ_fxAZHCjMWU9kEjzaUMhuN52vsKMA6Tb9Dtx3/s256/1000096788.png" alt="Logo" class="nav-logo-img"> 
+                <span style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.25rem; color: #ffffff; margin-left: 6px;">Iskcon Hadapsar</span>
+            </a>
+        </div>
+        <div class="nav-right-group">
+            <a href="http://action_notifications" class="notif-btn d-none"><i class="far fa-bell"></i></a>
+        </div>
+    </div>
+</nav>
+
+<div class="mantra-ticker" id="mahamantra-banner">
+    <div class="mantra-ticker-content">
+        <span class="ticker-span"><i class="fas fa-sun"></i> Hare Krishna Hare Krishna Krishna Krishna Hare Hare <span style="opacity:0.6;margin:0 10px;">|</span> Hare Rama Hare Rama Rama Rama Hare Hare <i class="fas fa-sun"></i></span>
+        <span class="ticker-span"><i class="fas fa-sun"></i> Hare Krishna Hare Krishna Krishna Krishna Hare Hare <span style="opacity:0.6;margin:0 10px;">|</span> Hare Rama Hare Rama Rama Rama Hare Hare <i class="fas fa-sun"></i></span>
+    </div>
+</div>
+
+<!-- Premium Dashboard Language Switcher Card on main screen -->
+<div class="container-fluid px-3 mt-3 mb-1" id="main-lang-switcher-container">
+    <div class="dashboard-lang-switcher">
+        <span class="lang-switcher-label">
+            <i class="fas fa-language"></i> <span data-key="change_lang">Language:</span>
+        </span>
+        <div class="lang-pills">
+            <button class="lang-pill" data-lang-pill="en" onclick="setLanguage('en')">English</button>
+            <button class="lang-pill" data-lang-pill="hi" onclick="setLanguage('hi')">हिन्दी</button>
+            <button class="lang-pill" data-lang-pill="mr" onclick="setLanguage('mr')">मराठी</button>
+        </div>
+    </div>
+</div>
+
+<div id="heroCarousel" class="carousel slide carousel-fade hero-slider" data-bs-ride="carousel" data-aos="zoom-in" data-aos-duration="600">
+    <div class="carousel-inner" id="slider-inner" style="height: 100%;">
+        <div class="carousel-item active" style="background:var(--bg-color);">
+            <div class="d-flex justify-content-center align-items-center h-100 flex-column" style="opacity:0.8;">
+                <div class="spinner-border text-warning mb-2 shadow-sm" role="status" style="width: 2.5rem; height: 2.5rem; border: .25em solid currentColor; border-right-color: transparent; border-radius: 50%;"></div>
+                <small style="font-weight:800; font-family:'Cinzel', serif; letter-spacing:1px; color:var(--primary); text-transform:uppercase;">Loading Updates...</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="big-live-alert" class="container-fluid px-3 mt-3 mb-2">
+    <a href="go:darshan" class="big-live-btn">
+        <div class="live-pulse-ring"></div>
+        <i class="fas fa-video"></i>
+        <div class="bl-text">
+            <span class="bl-title" data-key="live_now">LIVE DARSHAN NOW</span>
+            <span class="bl-sub" data-key="tap_to_watch">Tap here to join the live stream</span>
+        </div>
+        <i class="fas fa-chevron-right ms-auto"></i>
+    </a>
+</div>
+
+<!-- Highlighted ISKCON Padyatra CTA Card -->
+<a href="go:pas" class="padyatra-card" data-aos="zoom-in" data-aos-duration="600">
+    <div class="py-bg-shapes"></div>
+    <div class="py-content">
+        <div class="py-icon"><i class="fas fa-route"></i></div>
+        <div class="py-text">
+            <h4 data-key="padyatra_title">ISKCON Padyatra</h4>
+            <p data-key="padyatra_sub">Join the holy walk & spread the Holy Name</p>
+        </div>
+        <div class="py-btn"><span data-key="padyatra_btn">Explore Tour</span> <i class="fas fa-chevron-right"></i></div>
+    </div>
+</a>
+
+<div class="gita-daily-thought" data-aos="fade-in" data-aos-duration="800">
+    <div class="g-t-head"><i class="fas fa-feather-pointed" style="color:var(--primary);"></i> <span data-key="quote_head">Divine Message</span></div>
+    <div class="g-t-text">
+        <span id="divine-text-val" data-key="quote_text">"A man is made by his belief. As he believes, so he is."</span> <br>
+        <span id="divine-author-val" style="font-weight:600; font-style:normal; opacity: 0.85;">— Bhagavad Gita</span>
+    </div>
+</div>
+
+<div class="container-fluid px-3 my-2">
+    <div class="row g-2 mb-2" data-aos="fade-up" data-aos-duration="500">
+        <div class="col-6">
+            <a href="go:dono" class="feature-card shadow-sm" style="border: 1px solid rgba(37,211,102, 0.4); background: linear-gradient(to bottom right, var(--card-bg), rgba(37,211,102, 0.05));">
+                <div class="new-badge">SECURE</div><i class="fab fa-whatsapp" style="color:#25D366; font-size:2.2rem; margin-top:8px;"></i><span data-key="status" class="mt-2" style="font-size:0.85rem;">Donation</span>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="go:global_jap" class="feature-card shadow-sm" style="border: 1px solid rgba(220, 53, 69, 0.4); background: linear-gradient(to bottom right, var(--card-bg), rgba(220, 53, 69, 0.05)); position:relative;">
+                <div class="live-dot" style="right: 15%; top: 12px;"></div>
+                <div style="position:relative; width: 44px; height: 44px; border-radius: 50%; border: 2px solid #dc3545; padding: 2px; background:white; display:flex; justify-content:center; align-items:center; margin-top:2px;">
+                    <img src="https://iskconnews.org/wp-content/uploads/2022/02/lokanath-swami.jpg" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" loading="lazy" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Global Japa">
+                    <i class="fas fa-globe-americas" style="color:#dc3545; font-size:1.5rem; display:none;"></i>
+                </div>
+                <span data-key="global_japa" class="mt-2" style="font-size:0.8rem; font-weight: 800; color: #d32f2f;">Live Global Japa</span>
+            </a>
+        </div>
+    </div>
+    
+    <div class="row g-2 mb-4" data-aos="fade-up" data-aos-duration="600">
+        <div class="col-6">
+            <a href="go:game" class="feature-card" style="border: 1px solid rgba(233,30,99,0.3); background: linear-gradient(145deg, var(--card-bg) 50%, rgba(233,30,99,0.06) 100%);">
+                <i class="fas fa-book-open-reader" style="color:#D81B60; font-size:2rem;"></i><span data-key="game" class="mt-2" style="font-size:0.8rem;">Stories & Games</span>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="go:pune" class="feature-card" style="border: 1px solid rgba(156,39,176,0.3); background: linear-gradient(145deg, var(--card-bg) 50%, rgba(156,39,176,0.06) 100%);">
+                <i class="fas fa-vihara" style="color:#8E24AA; font-size:1.9rem;"></i><span data-key="pune_temples_home" class="mt-2" style="font-size:0.8rem;">All Pune Temples</span>
+            </a>
+        </div>
+    </div>
+
+    <a href="go:calendar" class="calendar-premium-card" data-aos="fade-up" data-aos-duration="650">
+        <div class="cal-icon-wrapper">
+            <i class="far fa-calendar-check cal-icon"></i>
+            <div class="cal-text">
+                <h4 data-key="ekadashi_cal">Ekadashi Calendar</h4>
+                <p data-key="ekadashi_cal_sub">Track all fasting dates accurately</p>
+            </div>
+        </div>
+        <i class="fas fa-arrow-right text-white"></i>
+    </a>
+
+    <div class="master-lyrics-box" data-aos="flip-up" data-aos-duration="700">
+        <a href="go:mantras" class="lyric-read-action">
+            <div class="epic-book-icon"><i class="fas fa-book-open"></i></div>
+            <div class="lyric-text-group"><h4 class="lyric-title" data-key="lyric_vault">Sacred Lyrics & Paath</h4><div class="lyric-sub" data-key="lyric_sub">Read all divine mantras, aartis & bhajan words</div></div>
+        </a>
+        <div class="lyrics-bottom-bar">
+            <a href="go:man" class="mini-meta-chip"><span data-key="a_mangal">Mangal</span></a>
+            <a href="go:nar" class="mini-meta-chip"><span data-key="a_narasimha">Narasimha</span></a>
+            <a href="go:tul" class="mini-meta-chip"><span data-key="a_tulasi">Tulasi</span></a>
+        </div>
+    </div>
+
+    <div class="row g-2 mb-3 mt-2" data-aos="fade-up" data-aos-duration="700" id="quick-links-row">
+        <div class="col-4 transition-col" id="col-schedule">
+            <a href="go:schedule" class="feature-card p-2" style="border-bottom: 2.5px solid #2196F3;"><i class="far fa-clock" style="color:#1976D2;"></i><span data-key="schedule">Schedule</span></a>
+        </div>
+        <div class="col-4 transition-col" id="col-darshan">
+            <a href="go:darshan" class="feature-card p-2" style="border-bottom: 2.5px solid #F44336;"><div class="live-dot"></div><i class="fas fa-video" style="color:#D32F2F;"></i><span data-key="darshan">Darshan</span></a>
+        </div>
+        <div class="col-4 transition-col" id="col-visit">
+            <div onclick="scrollToAddress()" class="feature-card p-2" role="button" style="border-bottom: 2.5px solid var(--primary);"><i class="fas fa-map-location-dot" style="color:#F57C00;"></i><span data-key="visit">Visit Us</span></div>
+        </div>
+    </div>
+
+    <div class="section-header" data-aos="fade-right"><h5 class="section-title" data-key="gallery_h">Photo Gallery</h5><a href="go:gallery" class="see-all"><span data-key="see_all">See All</span> <i class="fas fa-chevron-right ms-1" style="font-size:0.75rem;"></i></a></div>
+    <div class="h-scroll mx-n2" id="gallery-scroll"></div>
+
+    <div class="section-header" data-aos="fade-right"><h5 class="section-title" data-key="videos_h">Temple Videos</h5><a href="go:tmp_vids" class="see-all"><span data-key="see_all">See All</span> <i class="fas fa-chevron-right ms-1" style="font-size:0.75rem;"></i></a></div>
+    <div class="h-scroll mx-n2" id="video-scroll"></div>
+
+    <div class="section-header" data-aos="fade-right"><h5 class="section-title" data-key="kirtan_h">Bhajans & Aarti</h5><a href="go:aud_krt" class="see-all"><span data-key="see_all">See All</span> <i class="fas fa-chevron-right ms-1" style="font-size:0.75rem;"></i></a></div>
+    <div class="h-scroll mx-n2" id="audio-scroll"></div>
+
+    <div class="section-header" data-aos="fade-right"><h5 class="section-title" data-key="lecture_h">Katha & Kirtan</h5><a href="go:lec" class="see-all"><span data-key="see_all">See All</span> <i class="fas fa-chevron-right ms-1" style="font-size:0.75rem;"></i></a></div>
+    <div class="h-scroll mx-n2 pb-3" id="lecture-scroll"></div>
+
+    <div class="address-box mx-n1" id="address-section" data-aos="zoom-in" data-aos-duration="600">
+        <h5 style="font-family:'Cinzel',serif; color:var(--text-color); font-weight:800; margin-bottom:12px; font-size:1.35rem;" data-key="visit_h">Visit Our Temple</h5>
+        <p class="address-text mx-1"><i class="fas fa-location-dot" style="color:var(--primary); margin-right:6px; font-size:1.2rem;"></i> GW2M+X5J, Pune - Solapur Rd, near Kanyadan Mangal Karyalaya, Aru Nagar, Bhosale Nagar, Hadapsar, Pune, Maharashtra 411028</p>
+        <div class="row g-3 mt-2">
+            <div class="col-6"><button onclick="copyAddress()" class="copy-btn"><i class="far fa-copy"></i> <span data-key="copy">Copy Map</span></button></div>
+            <div class="col-6"><button onclick="openMap()" class="map-btn"><i class="fas fa-diamond-turn-right"></i> <span data-key="map">Navigate</span></button></div>
+        </div>
+    </div>
+</div>
+
+<footer class="premium-footer mt-5">
+    <svg class="footer-wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 250" preserveAspectRatio="none" style="height:70px;"><path fill-opacity="1" d="M0,96L80,117.3C160,139,320,181,480,181.3C640,181,800,139,960,122.7C1120,107,1280,117,1360,122.7L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path></svg>
+    <div class="footer-content">
+        <div class="footer-logo-area"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh89ueri3DvWfVUmM76dyYJSTCLcDC6oYuAT3j-ezAKl5iDeJ97q28vt2MR39RJwL8BGI91we6F4DRj-u7j1EE2NPyQRwFs0HfYcB4HjxZ9VoeUQWGR7GdARSdow00uHqEehsr6gOVDFG15mntfIdNuOrQ_fxAZHCjMWU9kEjzaUMhuN52vsKMA6Tb9Dtx3/s256/1000096788.png" class="footer-logo-img" alt="Footer Logo" loading="lazy" decoding="async"></div>
+        <p class="footer-mantra" data-key="mantra"> Hare Krishna Hare Krishna<br>Krishna Krishna Hare Hare<br><span style="display:inline-block; margin-top:5px; font-weight:800; color:var(--primary); font-size:1.05rem;">Hare Rama Hare Rama<br>Rama Rama Hare Hare</span> </p>
+        
+        <div class="footer-social mt-4">
+            <a href="intent://youtube.com/@iskcon_hadapsar?si=sPlFhreQZ9YJ7Fl1#Intent;scheme=https;package=com.google.android.youtube;S.browser_fallback_url=https://youtube.com/@iskcon_hadapsar;end" class="f-icon"><i class="fab fa-youtube"></i></a>
+            <a href="intent://www.facebook.com/ISKCONHadapsar/#Intent;scheme=https;package=com.facebook.katana;S.browser_fallback_url=https://www.facebook.com/ISKCONHadapsar/;end" class="f-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="intent://instagram.com/iskcon_hadapsar/#Intent;scheme=https;package=com.instagram.android;S.browser_fallback_url=https://www.instagram.com/iskcon_hadapsar/;end" class="f-icon"><i class="fab fa-instagram"></i></a>
+        </div>
+
+        <div class="footer-links mt-4">
+            <a href="go:privacy" data-key="privacy">Privacy Policy</a>
+            <a href="go:terms" data-key="terms">Terms & Conditions</a>
+            <a href="go:about" data-key="about">About ISKCON</a>
+            <a href="go:contact" data-key="contact">Contact Details</a>
+        </div>
+        <div class="footer-divider"></div>
+        <p class="copyright mt-3">© 2026 ISKCON Hadapsar. All Rights Reserved.</p>
+        <div class="dev-credit-box mt-3 mb-2" onclick="window.location.href='go:dev'" role="button">
+            <div class="dev-credit" data-key="credit" style="font-size: 0.85rem; opacity: 0.9;">Designed & Developed with ❤️ by <span class="dev-name">Santosh</span></div>
+            <div class="dev-contact-hint"><span data-key="contact_dev_hint">Click to contact developer</span> <i class="fas fa-arrow-right" style="font-size:0.7rem; margin-left:4px;"></i></div>
+        </div>
+    </div>
+</footer>
+
+<!-- Deferred Scripts for Instant Performance -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+
+<script>
+    function updateOnlineStatus() { if (!navigator.onLine) document.body.classList.add('is-offline'); else document.body.classList.remove('is-offline'); }
+    window.addEventListener('online', updateOnlineStatus); window.addEventListener('offline', updateOnlineStatus); updateOnlineStatus(); 
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.getElementById('appSidebar'); 
+        const openBtn = document.getElementById('openSidebarBtn'); 
+        const closeBtn = document.getElementById('closeSidebarBtn'); 
+        const backdrop = document.getElementById('customBackdrop');
+        
+        function openSidebar() { sidebar.classList.add('show'); backdrop.classList.add('show'); document.body.style.overflow = 'hidden'; }
+        function closeSidebar() { sidebar.classList.remove('show'); backdrop.classList.remove('show'); document.body.style.overflow = ''; }
+        
+        if (openBtn) openBtn.addEventListener('click', openSidebar); 
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar); 
+        if (backdrop) backdrop.addEventListener('click', closeSidebar);
+        
+        setTimeout(() => { try { if(typeof AOS !== 'undefined') AOS.init({ once: true, offset: 20, easing: 'ease-out-cubic' }); } catch(e){} }, 500);
+    });
+    
+    function runFallbackSlider() {
+        if (typeof bootstrap === 'undefined') {
+            const items = document.querySelectorAll('.carousel-item');
+            if (items.length > 1) {
+                let activeIndex = 0;
+                items.forEach((item, index) => { if (item.classList.contains('active')) activeIndex = index; item.classList.remove('active'); });
+                let nextIndex = (activeIndex + 1) % items.length;
+                items[nextIndex].classList.add('active');
+                let currentInterval = parseInt(items[nextIndex].getAttribute('data-bs-interval')) || 1500;
+                const pBar = document.getElementById('carouselProgressBar');
+                if(pBar) { pBar.style.animation = 'none'; pBar.offsetHeight; pBar.style.animation = `progressFill ${currentInterval}ms linear 1`; }
+                setTimeout(runFallbackSlider, currentInterval);
+            } else setTimeout(runFallbackSlider, 1500);
+        }
+    }
+    setTimeout(runFallbackSlider, 1500);
+
+    function openSupportModal() { document.getElementById('supportModalOverlay').classList.add('show'); document.body.style.overflow = 'hidden'; }
+    function closeSupportModal(e) { if(e && e.target !== document.getElementById('supportModalOverlay') && e !== null) return; document.getElementById('supportModalOverlay').classList.remove('show'); document.body.style.overflow = ''; }
+    
+    function copyAddress() {
+        navigator.clipboard.writeText("GW2M+X5J, Pune - Solapur Rd, near Kanyadan Mangal Karyalaya, Aru Nagar, Bhosale Nagar, Hadapsar, Pune, Maharashtra 411028");
+        alert("Address Copied!");
+    }
+    
+    function openMap() { 
+        window.location.href = "intent://maps.google.com/maps?q=GW2M%2BX5J%2C+Pune+-+Solapur+Rd%2C+near+Kanyadan+Mangal+Karyalaya%2C+Aru+Nagar%2C+Bhosale+Nagar%2C+Hadapsar%2C+Pune%2C+Maharashtra+411028#Intent;scheme=https;package=com.google.android.apps.maps;S.browser_fallback_url=https://maps.google.com/maps?q=GW2M%2BX5J%2C+Pune+-+Solapur+Rd%2C+near+Kanyadan+Mangal+Karyalaya%2C+Aru+Nagar%2C+Bhosale+Nagar%2C+Hadapsar%2C+Pune%2C+Maharashtra+411028;end";
+    } 
+    
+    function scrollToAddress() { document.getElementById('address-section').scrollIntoView({behavior: 'smooth'}); }
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    const sliderDbConfig = { apiKey: "AIzaSyDaiyXkiQgyJWAC7QsOcneHl0KU0O4kwgI", authDomain: "iskcon-slider.firebaseapp.com", databaseURL: "https://iskcon-slider-default-rtdb.firebaseio.com", projectId: "iskcon-slider", storageBucket: "iskcon-slider.firebasestorage.app", messagingSenderId: "887649015723", appId: "1:887649015723:web:f64104897972e65ea564ee" };
+    const mainDbConfig = { apiKey: "AIzaSyBfbNzASqzPt4kMP-LlpJasIras7ifTch4", authDomain: "iskcon-hadapsar.firebaseapp.com", databaseURL: "https://iskcon-hadapsar-default-rtdb.firebaseio.com", projectId: "iskcon-hadapsar", appId: "1:231589086724:web:64d8a5d7a136b39db39751" };
+
+    try {
+        const app = initializeApp(sliderDbConfig); 
+        const db = getDatabase(app);
+        const appMain = initializeApp(mainDbConfig, "mainDB");
+        const dbMain = getDatabase(appMain);
+        
+        const liveStatusRef = ref(dbMain, 'live_status/isLive');
+        onValue(liveStatusRef, (snapshot) => {
+            const isLive = snapshot.val();
+            const bigBtn = document.getElementById('big-live-alert');
+            const colSched = document.getElementById('col-schedule');
+            const colDarsh = document.getElementById('col-darshan');
+            const colVisit = document.getElementById('col-visit');
+
+            if(isLive) {
+                if(bigBtn) bigBtn.style.display = 'block';
+                if(colDarsh) colDarsh.classList.add('d-none');
+                if(colSched) { colSched.classList.remove('col-4'); colSched.classList.add('col-6'); }
+                if(colVisit) { colVisit.classList.remove('col-4'); colVisit.classList.add('col-6'); }
+            } else {
+                if(bigBtn) bigBtn.style.display = 'none';
+                if(colDarsh) colDarsh.classList.remove('d-none');
+                if(colSched) { colSched.classList.remove('col-6'); colSched.classList.add('col-4'); }
+                if(colVisit) { colVisit.classList.remove('col-6'); colVisit.classList.add('col-4'); }
+            }
+        });
+
+        window.sliderDataList = []; window.dateWidgetOrder = 1; window.divineMessageData = null;
+        onValue(ref(db, 'slider_settings/date_order'), (snapshot) => { window.dateWidgetOrder = snapshot.val() || 1; if (typeof window.renderMasterSlider === 'function') window.renderMasterSlider(); });
+        onValue(ref(db, 'slider_items'), (snapshot) => { const data = snapshot.val(); window.sliderDataList = []; if (data) { Object.values(data).forEach(item => { window.sliderDataList.push(item); }); } if (typeof window.renderMasterSlider === 'function') window.renderMasterSlider(); });
+        onValue(ref(db, 'divine_message'), (snapshot) => { window.divineMessageData = snapshot.val(); if (typeof window.updateDivineMessageUI === 'function') window.updateDivineMessageUI(); });
+    } catch (e) { console.log("Firebase status: blocked."); window.renderMasterSlider(); }
+</script>
+
+<script>
+    const ekadasiData = [
+        { "date": "2024-01-07", "name_key": "e_saphala", "link": "go:e_saphala" }, { "date": "2024-01-21", "name_key": "e_putrada", "link": "go:e_putrada" }, { "date": "2024-02-06", "name_key": "e_shattila", "link": "go:e_shattila" }, { "date": "2024-02-20", "name_key": "e_bhaimi", "link": "go:e_bhaimi" }, { "date": "2024-03-06", "name_key": "e_vijaya", "link": "go:e_vijaya" }, { "date": "2024-03-20", "name_key": "e_amalaki", "link": "go:e_amalaki" }, { "date": "2024-04-05", "name_key": "e_papmoch", "link": "go:e_papmoch" }, { "date": "2024-04-19", "name_key": "e_kamada", "link": "go:e_kamada" }, { "date": "2024-05-04", "name_key": "e_varuthi", "link": "go:e_varuthi" }, { "date": "2024-05-19", "name_key": "e_mohini", "link": "go:e_mohini" }, { "date": "2024-06-02", "name_key": "e_apara", "link": "go:e_apara" }, { "date": "2024-06-18", "name_key": "e_nirjala", "link": "go:e_nirjala" }, { "date": "2024-07-02", "name_key": "e_yogini", "link": "go:e_yogini" }, { "date": "2024-07-17", "name_key": "e_sayana", "link": "go:e_sayana" }, { "date": "2024-07-31", "name_key": "e_kamika", "link": "go:e_kamika" }, { "date": "2024-08-16", "name_key": "e_pavitra", "link": "go:e_pavitra" }, { "date": "2024-08-29", "name_key": "e_annada", "link": "go:e_annada" }, { "date": "2024-09-14", "name_key": "e_parsva", "link": "go:e_parsva" }, { "date": "2024-09-28", "name_key": "e_indira", "link": "go:e_indira" }, { "date": "2024-10-14", "name_key": "e_papanku", "link": "go:e_papanku" }, { "date": "2024-10-28", "name_key": "e_rama", "link": "go:e_rama" }, { "date": "2024-11-12", "name_key": "e_utthana", "link": "go:e_utthana" }, { "date": "2024-11-26", "name_key": "e_utpanna", "link": "go:e_utpanna" }, { "date": "2024-12-11", "name_key": "e_mokshada", "link": "go:e_mokshada" }, { "date": "2024-12-26", "name_key": "e_saphala", "link": "go:e_saphala" },
+        { "date": "2025-01-10", "name_key": "e_putrada", "link": "go:e_putrada" }, { "date": "2025-01-25", "name_key": "e_shattila", "link": "go:e_shattila" }, { "date": "2025-02-09", "name_key": "e_bhaimi", "link": "go:e_bhaimi" }, { "date": "2025-02-24", "name_key": "e_vijaya", "link": "go:e_vijaya" }, { "date": "2025-03-10", "name_key": "e_amalaki", "link": "go:e_amalaki" }, { "date": "2025-03-25", "name_key": "e_papmoch", "link": "go:e_papmoch" }, { "date": "2025-04-08", "name_key": "e_kamada", "link": "go:e_kamada" }, { "date": "2025-04-23", "name_key": "e_varuthi", "link": "go:e_varuthi" }, { "date": "2025-05-08", "name_key": "e_mohini", "link": "go:e_mohini" }, { "date": "2025-05-23", "name_key": "e_apara", "link": "go:e_apara" }, { "date": "2025-06-06", "name_key": "e_nirjala", "link": "go:e_nirjala" }, { "date": "2025-06-21", "name_key": "e_yogini", "link": "go:e_yogini" }, { "date": "2025-07-06", "name_key": "e_sayana", "link": "go:e_sayana" }, { "date": "2025-07-20", "name_key": "e_kamika", "link": "go:e_kamika" }, { "date": "2025-08-04", "name_key": "e_pavitra", "link": "go:e_pavitra" }, { "date": "2025-08-19", "name_key": "e_annada", "link": "go:e_annada" }, { "date": "2025-09-03", "name_key": "e_parsva", "link": "go:e_parsva" }, { "date": "2025-09-17", "name_key": "e_indira", "link": "go:e_indira" }, { "date": "2025-10-02", "name_key": "e_papanku", "link": "go:e_papanku" }, { "date": "2025-10-17", "name_key": "e_rama", "link": "go:e_rama" }, { "date": "2025-11-01", "name_key": "e_utthana", "link": "go:e_utthana" }, { "date": "2025-11-15", "name_key": "e_utpanna", "link": "go:e_utpanna" }, { "date": "2025-11-30", "name_key": "e_mokshada", "link": "go:e_mokshada" }, { "date": "2025-12-15", "name_key": "e_saphala", "link": "go:e_saphala" }, { "date": "2025-12-30", "name_key": "e_putrada", "link": "go:e_putrada" },
+        { "date": "2026-01-14", "name_key": "e_shattila", "link": "go:e_shattila" }, { "date": "2026-01-29", "name_key": "e_bhaimi", "link": "go:e_bhaimi" }, { "date": "2026-02-13", "name_key": "e_vijaya", "link": "go:e_vijaya" }, { "date": "2026-02-27", "name_key": "e_amalaki", "link": "go:e_amalaki" }, { "date": "2026-03-15", "name_key": "e_papmoch", "link": "go:e_papmoch" }, { "date": "2026-03-29", "name_key": "e_kamada", "link": "go:e_kamada" }, { "date": "2026-04-13", "name_key": "e_varuthi", "link": "go:e_varuthi" }, { "date": "2026-04-27", "name_key": "e_mohini", "link": "go:e_mohini" }, { "date": "2026-05-13", "name_key": "e_apara", "link": "go:e_apara" }, { "date": "2026-05-27", "name_key": "e_padmini", "link": "go:e_padmini" }, { "date": "2026-06-11", "name_key": "e_parama", "link": "go:e_parama" }, { "date": "2026-06-25", "name_key": "e_nirjala", "link": "go:e_nirjala" }, { "date": "2026-07-11", "name_key": "e_yogini", "link": "go:e_yogini" }, { "date": "2026-07-25", "name_key": "e_sayana", "link": "go:e_sayana" }, { "date": "2026-08-09", "name_key": "e_kamika", "link": "go:e_kamika" }, { "date": "2026-08-24", "name_key": "e_pavitra", "link": "go:e_pavitra" }, { "date": "2026-09-07", "name_key": "e_annada", "link": "go:e_annada" }, { "date": "2026-09-22", "name_key": "e_parsva", "link": "go:e_parsva" }, { "date": "2026-10-06", "name_key": "e_indira", "link": "go:e_indira" }, { "date": "2026-10-22", "name_key": "e_papanku", "link": "go:e_papanku" }, { "date": "2026-11-05", "name_key": "e_rama", "link": "go:e_rama" }, { "date": "2026-11-21", "name_key": "e_utthana", "link": "go:e_utthana" }, { "date": "2026-12-04", "name_key": "e_utpanna", "link": "go:e_utpanna" }, { "date": "2026-12-20", "name_key": "e_mokshada", "link": "go:e_mokshada" },
+        { "date": "2027-01-03", "name_key": "e_saphala", "link": "go:e_saphala" }, { "date": "2027-01-19", "name_key": "e_putrada", "link": "go:e_putrada" }, { "date": "2027-02-02", "name_key": "e_shattila", "link": "go:e_shattila" }, { "date": "2027-02-17", "name_key": "e_bhaimi", "link": "go:e_bhaimi" }, { "date": "2027-03-04", "name_key": "e_vijaya", "link": "go:e_vijaya" }, { "date": "2027-03-18", "name_key": "e_amalaki", "link": "go:e_amalaki" }, { "date": "2027-04-02", "name_key": "e_papmoch", "link": "go:e_papmoch" }, { "date": "2027-04-17", "name_key": "e_kamada", "link": "go:e_kamada" }, { "date": "2027-05-02", "name_key": "e_varuthi", "link": "go:e_varuthi" }, { "date": "2027-05-16", "name_key": "e_mohini", "link": "go:e_mohini" }, { "date": "2027-06-01", "name_key": "e_apara", "link": "go:e_apara" }, { "date": "2027-06-15", "name_key": "e_nirjala", "link": "go:e_nirjala" }, { "date": "2027-06-30", "name_key": "e_yogini", "link": "go:e_yogini" }, { "date": "2027-07-14", "name_key": "e_sayana", "link": "go:e_sayana" }, { "date": "2027-07-30", "name_key": "e_kamika", "link": "go:e_kamika" }, { "date": "2027-08-12", "name_key": "e_pavitra", "link": "go:e_pavitra" }, { "date": "2027-08-28", "name_key": "e_annada", "link": "go:e_annada" }, { "date": "2027-09-11", "name_key": "e_parsva", "link": "go:e_parsva" }, { "date": "2027-09-26", "name_key": "e_indira", "link": "go:e_indira" }, { "date": "2027-10-11", "name_key": "e_papanku", "link": "go:e_papanku" }, { "date": "2027-10-26", "name_key": "e_rama", "link": "go:e_rama" }, { "date": "2027-11-10", "name_key": "e_utthana", "link": "go:e_utthana" }, { "date": "2027-11-24", "name_key": "e_utpanna", "link": "go:e_utpanna" }, { "date": "2027-12-09", "name_key": "e_mokshada", "link": "go:e_mokshada" }, { "date": "2027-12-23", "name_key": "e_saphala", "link": "go:e_saphala" },
+        { "date": "2028-01-08", "name_key": "e_putrada", "link": "go:e_putrada" }, { "date": "2028-01-22", "name_key": "e_shattila", "link": "go:e_shattila" }, { "date": "2028-02-07", "name_key": "e_bhaimi", "link": "go:e_bhaimi" }, { "date": "2028-02-21", "name_key": "e_vijaya", "link": "go:e_vijaya" }, { "date": "2028-03-07", "name_key": "e_amalaki", "link": "go:e_amalaki" }, { "date": "2028-03-21", "name_key": "e_papmoch", "link": "go:e_papmoch" }, { "date": "2028-04-06", "name_key": "e_kamada", "link": "go:e_kamada" }, { "date": "2028-04-20", "name_key": "e_varuthi", "link": "go:e_varuthi" }, { "date": "2028-05-05", "name_key": "e_mohini", "link": "go:e_mohini" }, { "date": "2028-05-20", "name_key": "e_apara", "link": "go:e_apara" }, { "date": "2028-06-03", "name_key": "e_nirjala", "link": "go:e_nirjala" }, { "date": "2028-06-18", "name_key": "e_yogini", "link": "go:e_yogini" }, { "date": "2028-07-02", "name_key": "e_sayana", "link": "go:e_sayana" }, { "date": "2028-07-18", "name_key": "e_kamika", "link": "go:e_kamika" }, { "date": "2028-08-01", "name_key": "e_pavitra", "link": "go:e_pavitra" }, { "date": "2028-08-17", "name_key": "e_annada", "link": "go:e_annada" }, { "date": "2028-08-30", "name_key": "e_parsva", "link": "go:e_parsva" }, { "date": "2028-09-15", "name_key": "e_indira", "link": "go:e_indira" }, { "date": "2028-09-29", "name_key": "e_papanku", "link": "go:e_papanku" }, { "date": "2028-10-14", "name_key": "e_rama", "link": "go:e_rama" }, { "date": "2028-10-29", "name_key": "e_utthana", "link": "go:e_utthana" }, { "date": "2028-11-13", "name_key": "e_utpanna", "link": "go:e_utpanna" }, { "date": "2028-11-28", "name_key": "e_mokshada", "link": "go:e_mokshada" }, { "date": "2028-12-12", "name_key": "e_saphala", "link": "go:e_saphala" }, { "date": "2028-12-27", "name_key": "e_putrada", "link": "go:e_putrada" },
+        { "date": "2029-01-10", "name_key": "e_shattila", "link": "go:e_shattila" }, { "date": "2029-01-26", "name_key": "e_bhaimi", "link": "go:e_bhaimi" }, { "date": "2029-02-09", "name_key": "e_vijaya", "link": "go:e_vijaya" }, { "date": "2029-02-25", "name_key": "e_amalaki", "link": "go:e_amalaki" }, { "date": "2029-03-10", "name_key": "e_papmoch", "link": "go:e_papmoch" }, { "date": "2029-03-26", "name_key": "e_padmini", "link": "go:e_padmini" }, { "date": "2029-04-09", "name_key": "e_parama", "link": "go:e_parama" }, { "date": "2029-04-25", "name_key": "e_kamada", "link": "go:e_kamada" }, { "date": "2029-05-09", "name_key": "e_varuthi", "link": "go:e_varuthi" }, { "date": "2029-05-24", "name_key": "e_mohini", "link": "go:e_mohini" }, { "date": "2029-06-07", "name_key": "e_apara", "link": "go:e_apara" }, { "date": "2029-06-22", "name_key": "e_nirjala", "link": "go:e_nirjala" }, { "date": "2029-07-07", "name_key": "e_yogini", "link": "go:e_yogini" }, { "date": "2029-07-21", "name_key": "e_sayana", "link": "go:e_sayana" }, { "date": "2029-08-06", "name_key": "e_kamika", "link": "go:e_kamika" }, { "date": "2029-08-20", "name_key": "e_pavitra", "link": "go:e_pavitra" }, { "date": "2029-09-04", "name_key": "e_annada", "link": "go:e_annada" }, { "date": "2029-09-18", "name_key": "e_parsva", "link": "go:e_parsva" }, { "date": "2029-10-04", "name_key": "e_indira", "link": "go:e_indira" }, { "date": "2029-10-18", "name_key": "e_papanku", "link": "go:e_papanku" }, { "date": "2029-11-02", "name_key": "e_rama", "link": "go:e_rama" }, { "date": "2029-11-16", "name_key": "e_utthana", "link": "go:e_utthana" }, { "date": "2029-12-02", "name_key": "e_utpanna", "link": "go:e_utpanna" }, { "date": "2029-12-16", "name_key": "e_mokshada", "link": "go:e_mokshada" }, { "date": "2029-12-31", "name_key": "e_saphala", "link": "go:e_saphala" },
+        { "date": "2030-01-15", "name_key": "e_putrada", "link": "go:e_putrada" }, { "date": "2030-01-30", "name_key": "e_shattila", "link": "go:e_shattila" }, { "date": "2030-02-14", "name_key": "e_bhaimi", "link": "go:e_bhaimi" }, { "date": "2030-02-28", "name_key": "e_vijaya", "link": "go:e_vijaya" }, { "date": "2030-03-16", "name_key": "e_amalaki", "link": "go:e_amalaki" }, { "date": "2030-03-29", "name_key": "e_papmoch", "link": "go:e_papmoch" }, { "date": "2030-04-14", "name_key": "e_kamada", "link": "go:e_kamada" }, { "date": "2030-04-28", "name_key": "e_varuthi", "link": "go:e_varuthi" }, { "date": "2030-05-14", "name_key": "e_mohini", "link": "go:e_mohini" }, { "date": "2030-05-27", "name_key": "e_apara", "link": "go:e_apara" }, { "date": "2030-06-12", "name_key": "e_nirjala", "link": "go:e_nirjala" }, { "date": "2030-06-26", "name_key": "e_yogini", "link": "go:e_yogini" }, { "date": "2030-07-11", "name_key": "e_sayana", "link": "go:e_sayana" }, { "date": "2030-07-26", "name_key": "e_kamika", "link": "go:e_kamika" }, { "date": "2030-08-09", "name_key": "e_pavitra", "link": "go:e_pavitra" }, { "date": "2030-08-24", "name_key": "e_annada", "link": "go:e_annada" }, { "date": "2030-09-08", "name_key": "e_parsva", "link": "go:e_parsva" }, { "date": "2030-09-23", "name_key": "e_indira", "link": "go:e_indira" }, { "date": "2030-10-07", "name_key": "e_papanku", "link": "go:e_papanku" }, { "date": "2030-10-23", "name_key": "e_rama", "link": "go:e_rama" }, { "date": "2030-11-05", "name_key": "e_utthana", "link": "go:e_utthana" }, { "date": "2030-11-21", "name_key": "e_utpanna", "link": "go:e_utpanna" }, { "date": "2030-12-05", "name_key": "e_mokshada", "link": "go:e_mokshada" }, { "date": "2030-12-21", "name_key": "e_saphala", "link": "go:e_saphala" }
+    ];
+
+    const gallery = [{ img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEl4fFheeQljSLtRMh5Gnq3c3j6xqwSfX3YeN4pI02ebfKmtwsFXLauHOMBNdClFdgXpkaV2j5gJFwxDBMDcUVi-fonSaA8qFPnpaMPlO6u305qP0rcPqGa4iufh-W5bIXbMLIHYjApRlZhF2uw8CFb65UikYDB42pU9Iu2xW1hRSiA2gGzqvaxP9V1APd/s700/1000096371.webp", t: "Entrance", link: "go:gallery" },{ img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj2iMJBEfqMuK3Oa3mKqhQkVHVL8lTJ0p1YoyX77hCJwiVLpxzuMoQGxiM8qU2lU5DXGGvafYIaTKEMmKak18XBD9pr6R8fJZugNTdmoiY4lgiSQjBCe-CgXI2lDe1bvMYs6_koVGSXqlMxTuhNitYEBXwoS_amo726zM2GXMUY0uY2JTnmi3oFtqIdLwJy/s700/1000096372.webp", t: "Gaura Nitai", link: "go:gallery" },{ img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgftLPu_jM1WHAD6_G2d4oMSu8SRkHeb6ZE3OLM2HyXiyDPY2Ch0b2Zk18g0kGFJHd8zseNi7dMUZFz7WmuehpnHtGlOXGSedcwy4hWt0G8oWMwuU0fBw_OWAX0ZcnkIW0yomsKcwoV8KrrlVYAMErXxJMIpZk3v1cxnZKuRXWUL3lzwzgW3PzsBg2t_ger/s700/1000096370.webp", t: "Main Altar", link: "go:gallery" },{ img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjTdGA5YE6KB8Vjv_NB-dvHEDho3t5JXv5Cl0V2LRW6nZrujh_kasEl4AixZ-1RyWLDiaWWDnkTgabDUTbKsfiKGTeZwras2RH5nCzo5aaL2uxB9zUyn8zWw9QRH02nOo0XBrWezCUFp-Qe_9Q3QHgYLiDsMJrW1w_hxXc28YRUMmbx-hvXm2oW-I_WoBSw/s700/1000096373.webp", t: "Govardhan", link: "go:gallery" }];
+    const videos = [{ img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhoh3xv7M2D8zEYlK9uPxjIjdlQuWDi8DsOVI2ECIuPoaENPkaXXlsHzOn9r9tWssoVrAeGbjTsCuphy3BeiVnNVl2kXxvLmxcCsbJB8-1P_esJ61wCZImnXVHB40mjnKpJoIIqq3dL1F-zoxO6K2I03M3z6LH5h3kd8s_buvwkVmnviXJg8NNp-3nyqso/s1376/1000228358.png", t: "RamNavmi", link: "go:tmp_ram" }, { img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEghml256V-E8rI4THin2xkDlBcswj_wIKIPAH77Lr5YyiPAGYY-ewIwZZyMtHt7eQ4PZn4AIkIpWZnMnX7UwjsoKnHeJCfXr4SDB2jJdZonvxGfhTxYk5f1XrDfXFffWVUnyWSLhlknue9_FBwf6b7HlbQYswgInLKhOTWhSxsn_yMFgGky-xknLxsf9QU/s1376/1000228359.png", t: "Gaur Nitai", link: "go:tmp_gaur" }, { img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmGIs3xtk-Cn6SRwG0rQuPd0iW3eVNN6HDmZAZae38qwCQlAMiaM5pb_Zky2zXZpdd7uqGWoF0lLhZIptS3HxicrmZBGUPFBBz92-E1uDj8MxwaKpT0BA24fO4Ek8r9TsFVWwVN7P8xkbcvM5HfrUp0oh-e9j1BN4Wy64QXrxMvAzZyWdDZ8AISiGhOxQ/s1376/1000228361.png", t: "Sunday Feast", link: "go:tmp_janm" }];
+    const audio = [{ img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj2zqiTZ78j6B7tqYFh5Cd-agJGzRJLOLARjfgZWNDzH9YjzEJ53lN8uveWFnvniWz58inZsgDc0aZdk5Feaddu14G9hoHnEOmUPb1_3ZdkT8ShL2PWpUe_sgf-EiNU4nWqD7X9ayVkkxa_Rpw5HpmP2qXLrAb74siFSirEj_a5C8Qk1oZGTq1yrgJqQ60/s1280/maxresdefault%20(2).jpg", t: "Jai Radha Madhava", link: "go:aud_3" }, { img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhaZSUu1t1ioA8FH5Dswww0K6l9rL__civt4QPUdSGcK9dL1CFDHY_QD_a0S6PPX66e6DG1fUx5DUL-m4sk1UmsjiZAbHCSc-PLLtaOhgMRQ_MjmsK6f6kmIzJNvHdV2XFH28Yrh8nupNqjdt0D-CdokemNsbpOpxwU2phSenRJ6a4mn282MQT2oblr2_s/s1280/maxresdefault.jpg", t: "Mangal Arti", link: "go:aud_1" }, { img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEirgrNGMiVt9YDhP0uMOM-0ZQPEU3scVnj63XU8Y8AOd6tVNWzdN4SoR5Gpc3MO13B0esgg0w4IiM2foESz2O9zRm7XWfd7SDW7Lnz32S3F_noDfiplH57pVO6Ceqq8ckaPeyW8h9NkBiI0gkQREatMEHQ-gw7_C_upDGjoqmMgqS1mBuCwcCIPsx2qoxY/s300/ab67616d00001e02883b470cb0cf592269216bd6.jpeg", t: "Kirtan by Prabhupada", link: "go:aud_5" }];
+    const lectures = [{ img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsCA3aWNRKFRUpfF8hFtZtRur4NKYsKqwCLnvpepm4XUMFUd82iVtJu4uOCZPylhvfC2Bx5tDgo2ZBFazttN8GfHRKfUfzwIcuMBbE1R91-s1IAbKiepcDOtRL9M_dUp5NVRMY0EGq5ML8vuXD90hNMKUbkG3Ke6Tv1T-IV3flgvUZUjMLjYoa4cP-kfgi/s480/1000096095.jpg", t: "Prabhuji Special", link: "go:lec" }, { img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh89ueri3DvWfVUmM76dyYJSTCLcDC6oYuAT3j-ezAKl5iDeJ97q28vt2MR39RJwL8BGI91we6F4DRj-u7j1EE2NPyQRwFs0HfYcB4HjxZ9VoeUQWGR7GdARSdow00uHqEehsr6gOVDFG15mntfIdNuOrQ_fxAZHCjMWU9kEjzaUMhuN52vsKMA6Tb9Dtx3/s256/1000096788.png", t: "Mind Control", link: "go:lec" }, { img: "https://i.ytimg.com/vi/wdaec2-YA_k/maxresdefault.jpg", t: "Happiness", link: "go:lec" }];
+
+    // Batch insertion logic for fast rendering
+    function loadData(data, id) { 
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        let htmlStr = '';
+        data.forEach(i => { 
+            htmlStr += `<div class="preview-card" onclick="window.location.href='${i.link}'" role="button"><img src="${i.img}" class="preview-img" loading="lazy" decoding="async" alt="Img"><div class="preview-info"><div class="preview-title">${i.t}</div></div></div>`; 
+        }); 
+        el.innerHTML = htmlStr;
+    }
+    loadData(gallery, 'gallery-scroll'); loadData(videos, 'video-scroll'); loadData(audio, 'audio-scroll'); loadData(lectures, 'lecture-scroll');
+
+    window.updateDivineMessageUI = function() {
+        const lang = localStorage.getItem('lang') || 'en';
+        let fallbackText = langData[lang]?.quote_text || '"A man is made by his belief. As he believes, so he is."';
+        let fallbackAuthor = lang === 'en' ? "— Bhagavad Gita" : "— श्रीमद्भगवद्गीता";
+        if (window.divineMessageData && window.divineMessageData[lang]) {
+            const data = window.divineMessageData[lang];
+            document.getElementById('divine-text-val').innerHTML = `"${data.text}"`;
+            document.getElementById('divine-author-val').innerHTML = `— ${data.author}`;
+        } else {
+            document.getElementById('divine-text-val').innerHTML = fallbackText;
+            document.getElementById('divine-author-val').innerHTML = fallbackAuthor;
+        }
+    };
+
+    // Calculate days left to next Ekadashi and display inside the premium card
+    function updateNextEkadashiInfoBadge() {
+        const lang = localStorage.getItem('lang') || 'en';
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        
+        let nextE = null;
+        for (let e of ekadasiData) {
+            const eDate = new Date(e.date);
+            if (eDate >= today) {
+                nextE = e;
+                break;
+            }
+        }
+        
+        const subTextEl = document.querySelector('[data-key="ekadashi_cal_sub"]');
+        if (subTextEl && nextE) {
+            const eDate = new Date(nextE.date);
+            const diffTime = Math.abs(eDate - today);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const name = langData[lang][nextE.name_key] || nextE.name_key;
+            
+            let displayStr = "";
+            if (lang === 'hi') {
+                displayStr = `अगली: ${name} (${diffDays === 0 ? "आज है" : `${diffDays} दिनों में`})`;
+            } else if (lang === 'mr') {
+                displayStr = `पुढील: ${name} (${diffDays === 0 ? "आज आहे" : `${diffDays} दिवसांत`})`;
+            } else {
+                displayStr = `Next: ${name} (${diffDays === 0 ? "Today" : `in ${diffDays} day${diffDays > 1 ? 's' : ''}`})`;
+            }
+            subTextEl.innerHTML = displayStr;
+        }
+    }
+
+    window.renderMasterSlider = function() {
+        const slider = document.getElementById('slider-inner');
+        const lang = localStorage.getItem('lang') || 'en';
+        const texts = langData[lang]; 
+        let allSlides = [];
+
+        function getISTMidnight() { const d = new Date(); const utc = d.getTime() + (d.getTimezoneOffset() * 60000); const ist = new Date(utc + (330 * 60000)); ist.setHours(0,0,0,0); return ist; }
+        const todayIST = getISTMidnight();
+        const tomIST = new Date(todayIST); tomIST.setDate(tomIST.getDate() + 1);
+
+        function formatISTStr(dateObj) { const y = dateObj.getFullYear(); const m = String(dateObj.getMonth() + 1).padStart(2, '0'); const d = String(dateObj.getDate()).padStart(2, '0'); return `${y}-${m}-${d}`; }
+        
+        const todayStr = formatISTStr(todayIST); 
+        const tomStr = formatISTStr(tomIST);
+
+        const ekadasiToday = ekadasiData.find(e => e.date === todayStr); 
+        const ekadasiTom = ekadasiData.find(e => e.date === tomStr);
+        
+        let alertHTML = ''; let hasEventClass = ''; const localeMap = { 'en': 'en-US', 'hi': 'hi-IN', 'mr': 'mr-IN' };
+        if (ekadasiToday) { alertHTML = `<div class="ekadasi-alert shadow-sm">${texts.today_is} ${texts[ekadasiToday.name_key]}</div><a href="${ekadasiToday.link}" class="ekadasi-btn shadow-sm">${texts.read_more} <i class="fas fa-arrow-right" style="margin-left:4px; font-size:1.1rem;"></i></a>`; hasEventClass = 'has-event'; } else if (ekadasiTom) { alertHTML = `<div class="ekadasi-alert shadow-sm">${texts.tom_is} ${texts[ekadasiTom.name_key]}</div><a href="${ekadasiTom.link}" class="ekadasi-btn shadow-sm">${texts.read_more} <i class="fas fa-arrow-right" style="margin-left:4px; font-size:1.1rem;"></i></a>`; hasEventClass = 'has-event'; }
+        
+        const m = todayIST.toLocaleString(localeMap[lang], {month:'long'});
+
+        allSlides.push({
+            seq: window.dateWidgetOrder || 1,
+            html: `<div class="carousel-item" data-bs-interval="1500"><div class="date-slide ${hasEventClass}"><h1>${todayIST.getDate()}</h1><p class="month-year">${m} ${todayIST.getFullYear()}</p><div id="clock" class="live-clock shadow-lg">--:--:--</div><div>${alertHTML}</div></div></div>`
+        });
+
+        if(window.sliderDataList && window.sliderDataList.length > 0) {
+            let groups = {};
+            window.sliderDataList.forEach(item => {
+                let seq = item.order || 10;
+                let key = `${item.type}_${seq}`;
+                if(!groups[key]) groups[key] = { type: item.type, seq: seq, items: [] };
+                groups[key].items.push(item);
+            });
+
+            Object.values(groups).forEach(group => {
+                if (group.type === 'image') {
+                    group.items.forEach(imgItem => {
+                        let linkHtmlStart = ''; let linkHtmlEnd = '';
+                        if(imgItem.linkAction && imgItem.linkAction !== 'none' && imgItem.linkValue) {
+                            let target = imgItem.linkAction === 'go' ? `go:${imgItem.linkValue}` : imgItem.linkValue;
+                            linkHtmlStart = `<a href="${target}" style="display:block; height:100%; width:100%;">`; linkHtmlEnd = `</a>`;
+                        }
+                        let durMs = imgItem.duration ? parseFloat(imgItem.duration) * 1000 : 1500;
+                        allSlides.push({
+                            seq: group.seq,
+                            html: `<div class="carousel-item" data-bs-interval="${durMs}">${linkHtmlStart}
+                                    <div style="position:relative; width:100%; height:100%;">
+                                        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1;">
+                                            <div class="spinner-border text-warning" role="status"></div>
+                                        </div>
+                                        <img src="${imgItem.imgUrl}" loading="lazy" decoding="async" onload="this.previousElementSibling.style.display='none'; this.style.opacity=1;" style="opacity:0; transition: opacity 0.3s ease-in-out; width:100%; height:100%; object-fit:cover; position:relative; z-index:2;">
+                                    </div>
+                                   ${linkHtmlEnd}</div>`
+                        });
+                    });
+                } else {
+                    const limit = 8; 
+                    for(let i=0; i<group.items.length; i+=limit) {
+                        const chunk = group.items.slice(i, i+limit);
+                        let headerText = ''; let icon = ''; let cssClass = '';
+                        
+                        if(group.type === 'birthday') { headerText = (lang === 'hi' ? "जन्मदिन की शुभकामनाएँ" : (lang === 'mr' ? "वाढदिवसाच्या शुभेच्छा" : "Happy Birthday")); icon = '🎂'; cssClass = 'ns-bday'; } 
+                        else if(group.type === 'anniversary') { headerText = (lang === 'hi' ? "विवाह वर्षगांठ" : (lang === 'mr' ? "लग्नाच्या वाढदिवसाच्या शुभेच्छा" : "Happy Anniversary")); icon = '💍'; cssClass = 'ns-anni'; } 
+                        else if(group.type === 'donation') { headerText = (lang === 'hi' ? "आज का दान" : (lang === 'mr' ? "दानाबद्दल धन्यवाद" : "Today's Donation")); icon = '🙏'; cssClass = 'ns-donate'; } 
+                        else { headerText = (lang === 'hi' ? "सूचना" : "Notice"); icon = '📢'; cssClass = 'ns-notice'; }
+
+                        let layoutClass = `layout-${chunk.length}`;
+                        let headerStyle = chunk.length > 4 ? 'font-size: 1.4rem; margin-bottom: 2px;' : '';
+
+                        let namesHTML = chunk.map((item) => {
+                            let n = item.name || item.text || '';
+                            let roleHtml = item.identity ? `<div class="person-role truncate">${item.identity}</div>` : (item.role ? `<div class="person-role truncate">${item.role}</div>` : '');
+                            let addrHtml = item.address ? `<div class="person-address truncate"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> ${item.address}</div>` : '';
+                            let linkHtml = '';
+                            if (item.linkAction && item.linkAction !== 'none' && item.linkValue) {
+                                let target = item.linkAction === 'go' ? `go:${item.linkValue}` : item.linkValue;
+                                linkHtml = `<a href="${target}" class="notice-btn">View <i class="fas fa-arrow-right" style="margin-left:3px; font-size:0.6rem;"></i></a>`;
+                            }
+                            return `<div class="person-container"><div class="person-name truncate">${n}</div>${roleHtml}${addrHtml}${linkHtml}</div>`;
+                        }).join('');
+
+                        let durMs = group.items[0].duration ? parseFloat(group.items[0].duration) * 1000 : 1500;
+                        allSlides.push({
+                            seq: group.seq, 
+                            html: `<div class="carousel-item" data-bs-interval="${durMs}"><div class="name-slide ${cssClass}"><div class="ns-header" style="${headerStyle}">${icon} <br> ${headerText}</div><div class="name-container ${layoutClass}">${namesHTML}</div></div></div>`
+                        });
+                    }
+                }
+            });
+        }
+        
+        allSlides.sort((a, b) => a.seq - b.seq);
+        let finalHTML = '';
+        let firstInterval = 1500;
+
+        allSlides.forEach((slide, index) => {
+            if (index === 0) {
+                slide.html = slide.html.replace('carousel-item', 'carousel-item active');
+                const match = slide.html.match(/data-bs-interval="(\d+)"/);
+                if (match) firstInterval = parseInt(match[1]);
+            }
+            finalHTML += slide.html;
+        });
+
+        slider.innerHTML = finalHTML + `<div id="carouselProgressBar" class="carousel-progress" style="animation: progressFill ${firstInterval}ms linear 1;"></div>`;
+
+        if (!window.carouselListenerAdded) {
+            const myCarousel = document.getElementById('heroCarousel');
+            if (myCarousel) {
+                myCarousel.addEventListener('slide.bs.carousel', function (e) {
+                    const interval = e.relatedTarget.getAttribute('data-bs-interval') || 1500;
+                    const pBar = document.getElementById('carouselProgressBar');
+                    if (pBar) {
+                        pBar.style.animation = 'none';
+                        pBar.offsetHeight;
+                        pBar.style.animation = `progressFill ${interval}ms linear 1`;
+                    }
+                });
+                window.carouselListenerAdded = true;
+            }
+        }
+    }
+
+    const langData = {
+        en: { 
+            app_name: "ISKCON Hadapsar", menu_title: "ISKCON Menu", change_lang: "Language:", home: "Home", schedule: "Schedule", darshan: "Live Darshan", gallery: "Gallery", videos: "Temple Videos", kirtan: "Bhajans & Aarti", lectures: "Katha & Kirtan", contact: "Contact", about: "About Us", notif: "Notifications", share: "Share App", dark: "Toggle Dark Mode", visit: "Visit Us", gallery_h: "Photo Gallery", videos_h: "Temple Videos", kirtan_h: "Bhajans & Aarti", lecture_h: "Katha & Kirtan", see_all: "See All", visit_h: "Visit Our Temple", copy: "Copy Map", map: "Navigate Area", privacy: "Privacy Policy", terms: "Terms & Conditions", mantra: "Hare Krishna Hare Krishna<br>Krishna Krishna Hare Hare<br>Hare Rama Hare Rama<br>Rama Rama Hare Hare", credit: "Designed & Developed with ❤️ by ", contact_dev: "Contact Developer", contact_dev_hint: "Click to contact developer", offline_msg: "You are currently offline. Showing saved version. Keep chanting!", today_is: "Today is", tom_is: "Tomorrow is", read_more: "Read More", status: "Donation", japa: "Digital Japa", global_japa: "Live Global Japa", game: "Stories & Games", pune_temples: "Pune Temples", pune_temples_home: "All Pune Temples", tour: "Temple Tour", lyric_vault: "Sacred Lyrics & Paath", lyric_sub: "Read all divine mantras, aartis & bhajan words", a_mangal: "Mangal", a_narasimha: "Narasimha", a_tulasi: "Tulasi", a_radha: "Radhika", quote_head: "Divine Message", quote_text: `"A man is made by his belief. As he believes, so he is."`,
+            fab_why_ads: "Why Ads?", ads_modal_title: "Why do we show ads? 🙏", ads_modal_desc: "Hare Krishna! To keep this app completely free, cover expensive server costs, manage our team, and continuously add new features, we use advertisements. This app is developed with love by a young devotee (born 2002!) dedicated to serving the community. Your support and patience mean the world to us! 🌸", ads_modal_close: "I Understand & Support ❤️",
+            live_now: "LIVE DARSHAN NOW", tap_to_watch: "Tap here to join the live stream",
+            padyatra_title: "ISKCON Padyatra", padyatra_sub: "Join the holy walk & spread the Holy Name", padyatra_btn: "Explore Tour",
+            ekadashi_cal: "Ekadashi Calendar", ekadashi_cal_sub: "Track all fasting dates accurately",
+            e_mokshada: "Mokshada Ekadashi", e_saphala: "Saphala Ekadashi", e_putrada: "Putrada Ekadashi", e_shattila: "Shat Tila Ekadashi", e_jaya: "Jaya Ekadashi", e_vijaya: "Vijaya Ekadashi", e_amalaki: "Amalaki Ekadashi", e_papmoch: "Papamochani Ekadashi", e_kamada: "Kamada Ekadashi", e_varuthi: "Varuthini Ekadashi", e_mohini: "Mohini Ekadashi", e_apara: "Apara Ekadashi", e_nirjala: "Nirjala Ekadashi", e_yogini: "Yogini Ekadashi", e_sayana: "Sayana Ekadashi", e_kamika: "Kamika Ekadashi", e_pavitra: "Pavitropana Ekadashi", e_annada: "Annada Ekadashi", e_parivar: "Parivartini Ekadashi", e_indira: "Indira Ekadashi", e_papanku: "Pashankusha Ekadashi", e_rama: "Rama Ekadashi", e_prabod: "Prabodhini Ekadashi", e_utpanna: "Utpanna Ekadashi", e_bhaimi: "Bhaimi Ekadashi", e_parsva: "Parshva Ekadashi", e_utthana: "Utthana Ekadashi", e_padmini: "Padmini Ekadashi", e_parama: "Parama Ekadashi"
+        },
+        hi: { 
+            app_name: "इस्कॉन हडपसर", menu_title: "मेनू", change_lang: "भाषा चुनें:", home: "होम", schedule: "समय सारणी", darshan: "लाइव दर्शन", gallery: "गैलरी", videos: "मंदिर वीडियो", kirtan: "भजन और आरती", lectures: "कथा और कीर्तन", contact: "संपर्क", about: "हमारे बारे में", notif: "सूचनाएं", share: "शेयर करें", dark: "डार्क मोड", visit: "पधारें", gallery_h: "फोटो गैलरी", videos_h: "मंदिर वीडियो", kirtan_h: "भजन और आरती", lecture_h: "कथा और कीर्तन", see_all: "सभी देखें", visit_h: "हमारे मंदिर पधारें", copy: "कॉपी मैप", map: "रास्ता देखें", privacy: "गोपनीयता नीति", terms: "नियम एवं शर्तें", mantra: "हरे कृष्ण हरे कृष्ण<br>कृष्ण कृष्ण हरे हरे<br>हरे राम हरे राम<br>राम राम हरे हरे", credit: "प्यार से डिज़ाइन और विकसित: ", contact_dev: "डेवलपर से संपर्क करें", contact_dev_hint: "सपोर्ट या फीडबैक के लिए टैप करें", offline_msg: "आप अभी ऑफ़लाइन हैं। सुरक्षित वर्ज़न दिखा रहे हैं। हरे कृष्ण जपते रहें!", today_is: "आज है", tom_is: "कल है", read_more: "महात्म्य पढ़ें", status: "दान", japa: "डिजिटल माला", global_japa: "लाइव ग्लोबल जप", game: "कथाएँ और खेल", pune_temples: "पुणे के मंदिर", pune_temples_home: "पुणे के सभी मंदिर", tour: "मंदिर दर्शन (Tour)", lyric_vault: "भजन लिरिक्स व पाठ", lyric_sub: "यहाँ पढ़ें - सभी आरती, भजन व श्लोकों के लिरिक्स", a_mangal: "मंगल", a_narasimha: "नरसिंह", a_tulasi: "तुलसी", a_radha: "श्री राधा", quote_head: "दिव्य विचार", quote_text: `"मनुष्य अपने विश्वास से निर्मित होता है। जैसा वह विश्वास करता है, वैसा ही बन जाता है।"`,
+            fab_why_ads: "Ads क्यों?", ads_modal_title: "हम विज्ञापन (Ads) क्यों दिखाते हैं? 🙏", ads_modal_desc: "हरे कृष्ण! इस ऐप को पूरी तरह से मुफ्त रखने, सर्वर की लागत को कवर करने और नए फीचर्स लाने के लिए हम विज्ञापनों का उपयोग करते हैं। यह ऐप एक युवा डेवलपर द्वारा समुदाय की सेवा के लिए प्रेमपूर्वक बनाया गया है। आपकी सहयोग और धैर्य के लिए हम आपके आभारी हैं! 🌸", ads_modal_close: "मैं समझता हूँ और सपोर्ट करता हूँ ❤️",
+            live_now: "लाइव दर्शन चालू है", tap_to_watch: "दर्शन करने के लिए यहाँ टैप करें",
+            padyatra_title: "इस्कॉन पदयात्रा", padyatra_sub: "पावन पदयात्रा से जुड़ें और हरिनाम का प्रचार करें", padyatra_btn: "दर्शन करें",
+            ekadashi_cal: "एकादशी कैलेंडर", ekadashi_cal_sub: "सभी उपवास तिथियों को सटीक रूप से ट्रैक करें",
+            e_mokshada: "मोक्षदा एकादशी", e_saphala: "सफला एकादशी", e_putrada: "पुत्रदा एकादशी", e_shattila: "षटतिला एकादशी", e_jaya: "जया एकादशी", e_vijaya: "विजया एकादशी", e_amalaki: "आमलकी एकादशी", e_papmoch: "पापमोचनी एकादशी", e_kamada: "कामदा एकादशी", e_varuthi: "वरुथिनी एकादशी", e_mohini: "मोहिनी एकादशी", e_apara: "अपरा एकादशी", e_nirjala: "निर्जला एकादशी", e_yogini: "योगिनी एकादशी", e_sayana: "शयन एकादशी", e_kamika: "कामिका एकादशी", e_pavitra: "पवित्रोपना एकादशी", e_annada: "अन्नदा एकादशी", e_parivar: "परिवर्तिनी एकादशी", e_indira: "इंदिरा एकादशी", e_papanku: "पापांकुशा एकादशी", e_rama: "रमा एकादशी", e_prabod: "प्रबोधिनी एकादशी", e_utpanna: "उत्पन्ना एकादशी", e_bhaimi: "भैमी एकादशी", e_parsva: "पार्श्व एकादशी", e_utthana: "उत्थाना एकादशी", e_padmini: "पद्मिनी एकादशी", e_parama: "परमा एकादशी"
+        },
+        mr: { 
+            app_name: "इस्कॉन हडपसर", menu_title: "मेनू", change_lang: "भाषा निवडा:", home: "मुख्यपृष्ठ", schedule: "वेळापत्रक", darshan: "थेट दर्शन", gallery: "गॅलरी", videos: "मंदिर व्हिडिओ", kirtan: "भजन आणि आरती", lectures: "कथा आणि कीर्तन", contact: "संपर्क", about: "आमच्याबद्दल", notif: "सूचना", share: "शेयर करा", dark: "डार्क मोड", visit: "भेट द्या", gallery_h: "फोटो गॅलरी", videos_h: "मंदिर व्हिडिओ", kirtan_h: "भजन आणि आरती", lecture_h: "कथा आणि कीर्तन", see_all: "सर्व पहा", visit_h: "आमच्या मंदिरात या", copy: "कॉपी पत्ता", map: "नकाशा व रस्ता", privacy: "गोपनीयता धोरण", terms: "अटी व शर्ती", mantra: "हरे कृष्ण हरे कृष्ण<br>कृष्ण कृष्ण हरे हरे<br>हरे राम हरे राम<br>राम राम हरे हरे", credit: "प्रेमाने डिझाइन आणि विकसित: ", contact_dev: "डेव्हलपरशी संपर्क साधा", contact_dev_hint: "सपोर्ट किंवा भेट देण्यासाठी टॅप करा", offline_msg: "तुम्ही सध्या offline आहात. सुरक्षित व्हर्जन दाखवत आहे. हरे कृष्ण जपत राहा!", today_is: "आज आहे", tom_is: "उद्या आहे", read_more: "अधिक वाचा", status: "दान", japa: "डिजिटल माळ", global_japa: "थेट ग्लोबल जप", game: "कथा आणि खेळ", pune_temples: "पुण्यातील मंदिरे", pune_temples_home: "पुण्यातील सर्व मंदिरे", tour: "मंदिर सफर (Tour)", lyric_vault: "भजन लिरिक्स आणि पठण", lyric_sub: "येथे वाचा - आरती, भजन आणि दैवी श्लोक", a_mangal: "मंगल", a_narasimha: "नरसिंह", a_tulasi: "तुळशी", a_radha: "श्री राधा", quote_head: "दिव्य विचार", quote_text: `"माणूस त्याच्या विश्वासाने घडतो. तो जसा विश्वास ठेवतो तसाच बनतो."`,
+            fab_why_ads: "Ads का?", ads_modal_title: "आम्ही जाहिराती (Ads) का दाखवतो? 🙏", ads_modal_desc: "हरे कृष्ण! हे ॲप पूर्णपणे विनामूल्य ठेवण्यासाठी, सर्व्हरचा खर्च भागवण्यासाठी आणि नवीन फीचर्स आणण्यासाठी आम्ही जाहिरातीचा वापर करतो. एका तरुण डेव्हलपरने समाजाच्या सेवेसाठी हे ॲप प्रेमाने बनवले आहे. तुमच्या पाठिंब्याबद्दल आणि सहकार्याबद्दल आम्ही खूप आभारी आहोत! 🌸", ads_modal_close: "मला समजले आणि माझा पाठिंबा आहे ❤️",
+            live_now: "थेट दर्शन चालू आहे", tap_to_watch: "दर्शन करण्यासाठी येथे टॅप करा",
+            padyatra_title: "इस्कॉन पदयात्रा", padyatra_sub: "पवित्र पदयात्रेत सामील व्हा आणि हरिनाम प्रचार करा", padyatra_btn: "प्रवास पहा",
+            ekadashi_cal: "एकादशी कॅलेंडर", ekadashi_cal_sub: "सर्व उपवासाच्या तारखा अचूकपणे ट्रॅक करा",
+            e_mokshada: "मोक्षदा एकादशी", e_saphala: "सफला एकादशी", e_putrada: "पुत्रदा एकादशी", e_shattila: "षटतिला एकादशी", e_jaya: "जया एकादशी", e_vijaya: "विजय एकादशी", e_amalaki: "आमलकी एकादशी", e_papmoch: "पापmochani एकादशी", e_kamada: "कामदा एकादशी", e_varuthi: "वरुथिनी एकादशी", e_mohini: "मोहनी एकादशी", e_apara: "अपरा एकादशी", e_nirjala: "निर्जला एकादशी", e_yogini: "योगिनी एकादशी", e_sayana: "शयन एकादशी", e_kamika: "कामिका एकादशी", e_pavitra: "पवित्रोपना एकादशी", e_annada: "अन्नदा एकादशी", e_parivar: "परिवर्तिनी एकादशी", e_indira: "इंदिरा एकादशी", e_papanku: "पापांकुशा एकादशी", e_rama: "रमा एकादशी", e_prabod: "प्रबोधिनी एकादशी", e_utpanna: "उत्पन्ना एकादशी", e_bhaimi: "भैमी एकादशी", e_parsva: "पार्श्व एकादशी", e_utthana: "उत्थाना एकादशी", e_padmini: "पद्मिनी एकादशी", e_parama: "परमा एकादशी"
+        }
+    };
+
+    function updateThemeIcon(isDark) {
+        const sidebarIcon = document.getElementById('sidebarThemeIcon');
+        if (sidebarIcon) {
+            sidebarIcon.className = isDark ? 'fas fa-sun' : 'far fa-moon';
+            sidebarIcon.style.color = isDark ? '#FFD54F' : 'var(--primary)';
+        }
+    }
+
+    function toggleTheme() { 
+        const isDark = document.body.getAttribute('data-theme') === 'dark'; 
+        document.body.setAttribute('data-theme', isDark ? 'light' : 'dark'); 
+        localStorage.setItem('theme', isDark ? 'light' : 'dark'); 
+        updateThemeIcon(!isDark);
+    }
+
+    function setLanguage(lang) {
+        localStorage.setItem('lang', lang); const texts = langData[lang];
+        document.querySelectorAll('[data-key]').forEach(el => {
+            const key = el.getAttribute('data-key');
+            if(texts[key]) { if(key === 'credit') el.innerHTML = texts[key] + '<span class="dev-name">Santosh</span>'; else el.innerHTML = texts[key]; }
+        });
+        
+        document.querySelectorAll('.lang-chip').forEach(chip => {
+            if(chip.getAttribute('data-lang') === lang) chip.classList.add('active', 'shadow-sm');
+            else chip.classList.remove('active', 'shadow-sm');
+        });
+
+        // Sync the main screen dashboard language pills
+        document.querySelectorAll('.lang-pill').forEach(pill => {
+            if(pill.getAttribute('data-lang-pill') === lang) pill.classList.add('active');
+            else pill.classList.remove('active');
+        });
+
+        if (typeof window.updateDivineMessageUI === 'function') window.updateDivineMessageUI();
+        window.renderMasterSlider(); 
+        updateNextEkadashiInfoBadge(); // Triggers live countdown updates on language change
+    }
+
+    const savedLang = localStorage.getItem('lang') || 'en';
+    setLanguage(savedLang);
+
+    const isDarkTheme = localStorage.getItem('theme') === 'dark';
+    if(isDarkTheme) document.body.setAttribute('data-theme', 'dark');
+    updateThemeIcon(isDarkTheme);
+
+    setInterval(() => { 
+        if(document.getElementById('clock')) { const lang = localStorage.getItem('lang') || 'en'; const localeMap = { 'en': 'en-US', 'hi': 'hi-IN', 'mr': 'mr-IN' }; document.getElementById('clock').innerText = new Date().toLocaleTimeString(localeMap[lang], {timeZone: "Asia/Kolkata"}); }
+    }, 1000);
+</script>
+</body>
+</html>
